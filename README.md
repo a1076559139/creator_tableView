@@ -2,11 +2,12 @@
 作者：zp
 
 # cell:
-//cell的初始化方法，tableView创建cell时会调用此方法
-@parma index Number cell的排序下标
-@parma data 自定义 初始化tableView时传入的data
-init(index, data) ;
-
+```
+*cell的初始化方法，tableView创建cell时会调用此方法
+*@parma index Number cell的排序下标
+*@parma data 自定义 初始化tableView时传入的data
+*init(index, data) ;
+```
 
 # tableView:
 //tableView的初始化方法
