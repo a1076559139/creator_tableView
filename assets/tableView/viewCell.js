@@ -17,16 +17,11 @@ cc.Class({
     //不可以重写
     _cellAddMethodToNode_: function () {
         this.node.clicked = this.clicked.bind(this);
-        var on = this.node.on;
-
-        this.node.on = function () {
-            cc.warn(this.name + '：主节点的点击事件，请请重写clicked方法');
-            on.apply(this, arguments);
-        }
     },
     _cellInit_: function () {
         if (!this._isCellInit_) {
             this._cellAddMethodToNode_();
+            this.node.on('touchend', this.clicked, this);
             this._isCellInit_ = true;
         }
     },

@@ -666,10 +666,16 @@ cc.Class({
         this._getScrollDirection(x, y);
     },
     _touchend: function (event) {
+        if (this._horizontal) {
+            this.horizontal = true;
+        } else {
+            this.vertical = true;
+        }
+        
         if (this._pageTotal > 1) {
             this._pageMove(event);
         }
-        this._ckickCell(event);
+        // this._ckickCell(event);
     },
     _ckickCell: function (event) {
         var srartp = event.getStartLocation();
