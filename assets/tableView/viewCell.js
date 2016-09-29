@@ -21,7 +21,6 @@ cc.Class({
     _cellInit_: function () {
         if (!this._isCellInit_) {
             this._cellAddMethodToNode_();
-            this.node.on('touchend', this.clicked, this);
             this._isCellInit_ = true;
         }
     },

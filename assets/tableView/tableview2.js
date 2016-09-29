@@ -675,14 +675,20 @@ cc.Class({
         if (this._pageTotal > 1) {
             this._pageMove(event);
         }
-        // this._ckickCell(event);
+        this._ckickCell(event);
     },
     _ckickCell: function (event) {
         var srartp = event.getStartLocation();
         var p = event.getLocation();
 
-        if (Math.abs(p.x - srartp.x) > 7 || Math.abs(p.y - srartp.y) > 7) {
-            return;
+        if (this._horizontal) {
+            if (Math.abs(p.x - srartp.x) > 7) {
+                return;
+            }
+        } else {
+            if (Math.abs(p.y - srartp.y) > 7) {
+                return;
+            }
         }
 
         var convertp = this.content.convertToNodeSpaceAR(p);
@@ -710,7 +716,6 @@ cc.Class({
             }
         }
     },
-
     //移动距离小于100点则不翻页
     _pageMove: function (event) {
         var x = this._view.width;
