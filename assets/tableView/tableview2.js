@@ -22,10 +22,34 @@ var _searchMaskParent = function (node) {
     return null;
 };
 
+//返回一个有序数组(对象,排序字段,[0-正序,1-倒序])
+var orderBy = function (o, key, desc) {
+    var a = [];
+    for (var k in o) {
+        for (var i = 0; i < a.length; i++) {
+            if (desc) {
+                if (o[k][key] > a[i][key]) {
+                    a.splice(i, 0, o[k]);
+                    break;
+                }
+            } else {
+                if (o[k][key] < a[i][key]) {
+                    a.splice(i, 0, o[k]);
+                    break;
+                }
+            }
+        }
+        if (a.length == i) {
+            a.push(o[k]);
+        }
+    }
+    return a;
+};
+
 cc.Class({
     extends: cc.ScrollView,
     editor: CC_EDITOR && {
-        inspector: 'packages://tableview2/inspector.js',
+        inspector: 'packages://tableView/inspector.js',
     },
     properties: {
         _data: null,
@@ -444,7 +468,7 @@ cc.Class({
                 this.horizontal = false;
             }
             this._view = this.content.parent;
-            this.addScrollEvent(this.node, "tableview2", "_scrollEvent");
+            this.addScrollEvent(this.node, "tableView", "_scrollEvent");
             this._addListenerToTouchLayer();
             if (this.stopPropagation) {
                 this.setStopPropagation();
@@ -489,7 +513,7 @@ cc.Class({
         nowoffset.x = -nowoffset.x;
         nowoffset.y = -nowoffset.y;
         var p = cc.pSub(offset, nowoffset);
-        if (this.ScrollModel == ScrollModel.Horizontal) {
+        if (this.horizontal) {
             if (p.x > 0) {
                 this._scrollDirection = ScrollDirection.Left;
             } else if (p.x < 0) {
@@ -582,10 +606,10 @@ cc.Class({
     },
     getCells: function (callback) {
         if (this._initSuccess) {
-            callback(ppGame.util.orderBy(this.content.children, 'tag'));
+            callback(orderBy(this.content.children, 'tag'));
         } else {
             this.scheduleOnce(function () {
-                callback(ppGame.util.orderBy(this.content.children, 'tag'));
+                callback(orderBy(this.content.children, 'tag'));
             })
         }
     },
@@ -604,9 +628,33 @@ cc.Class({
         }
     },
     _touchstart: function (event) {
-
+        if (this.horizontal) {
+            this._horizontal = true;
+            this.horizontal = false;
+        } else {
+            this._vertical = true;
+            this.vertical = false;
+        }
     },
     _touchmove: function (event) {
+        var startL = event.getStartLocation();
+        var l = event.getLocation();
+        if (this.horizontal) {
+            if (Math.abs(l.x - startL.x) <= 7) {
+                return;
+            }
+        } else {
+            if (Math.abs(l.y - startL.y) <= 7) {
+                return;
+            }
+        }
+
+        if (this._horizontal) {
+            this.horizontal = true;
+        } else {
+            this.vertical = true;
+        }
+
         var p = event.getDelta();
         var x = p.x;
         var y = p.y;
@@ -830,7 +878,7 @@ cc.Class({
     _scrollEvent: function (a, b) {
         if (b == cc.ScrollView.EventType.AUTOSCROLL_ENDED) {
             if (this.ViewType == ViewType.Single) {
-                if (this.ScrollModel == ScrollModel.Horizontal) {
+                if (this.horizontal) {
                     if (this._scrollDirection == ScrollDirection.Left) {
                         var node = this.content.getChildByTag(this._maxCellIndex)
                         var nodeBox = this._getBoundingBoxToWorld(node);
