@@ -49,7 +49,7 @@ var orderBy = function (o, key, desc) {
 cc.Class({
     extends: cc.ScrollView,
     editor: CC_EDITOR && {
-        inspector: 'packages://tableView/inspector.js',
+        inspector: 'packages://tableview2/inspector.js',
     },
     properties: {
         _data: null,
@@ -78,6 +78,9 @@ cc.Class({
             default: null,
             type: cc.Prefab,
             notify: function (oldValue) {
+                if (oldValue && oldValue.name === this.cell.name) {
+                    return;
+                }
                 this._clearCache();
             }
         },
@@ -162,7 +165,7 @@ cc.Class({
         widget.bottom = 0;
         widget.left = 0;
         widget.right = 0;
-        widget.isAlignOnce = true;
+        widget.isAlignOnce = false;
         this._touchLayer.parent = this._view;
 
         var self = this;
@@ -337,12 +340,15 @@ cc.Class({
         if (this._cellPool) {
             this.clear();
             this._cellPool = null;
+            this._groupCellCount = null;
         }
     },
     clear: function () {
         for (var index = this.content.childrenCount - 1; index >= 0; --index) {
             this._cellPool.put(this.content.children[index]);
         }
+        this._cellCount = 0;
+        this._showCellCount = 0;
     },
     reload: function () {
         for (var index = this.content.childrenCount - 1; index >= 0; --index) {
@@ -468,7 +474,7 @@ cc.Class({
                 this.horizontal = false;
             }
             this._view = this.content.parent;
-            this.addScrollEvent(this.node, "tableView", "_scrollEvent");
+            this.addScrollEvent(this.node, "tableview2", "_scrollEvent");
             this._addListenerToTouchLayer();
             if (this.stopPropagation) {
                 this.setStopPropagation();
@@ -533,16 +539,16 @@ cc.Class({
 
     addScrollEvent: function (target, component, handler) {
         var eventHandler = new cc.Component.EventHandler();
-        eventHandler.target = this.node;
+        eventHandler.target = target;
         eventHandler.component = component;
         eventHandler.handler = handler;
         this.scrollEvents.push(eventHandler);
     },
-    removeScrollEvent: function (target, component, handler) {
+    removeScrollEvent: function (target) {
         for (var key in this.scrollEvents) {
             var eventHandler = this.scrollEvents[key]
-            if (eventHandler.target, eventHandler.component, eventHandler.handler) {
-                a.splice(key, 1);
+            if (eventHandler.target === target) {
+                this.scrollEvents.splice(key, 1);
                 return;
             }
         }
@@ -552,16 +558,16 @@ cc.Class({
     },
     addPageEvent: function (target, component, handler) {
         var eventHandler = new cc.Component.EventHandler();
-        eventHandler.target = this.node;
+        eventHandler.target = target;
         eventHandler.component = component;
         eventHandler.handler = handler;
         this.pageChangeEvents.push(eventHandler);
     },
-    removePageEvent: function (target, component, handler) {
+    removePageEvent: function (target) {
         for (var key in this.pageChangeEvents) {
             var eventHandler = this.pageChangeEvents[key]
-            if (eventHandler.target, eventHandler.component, eventHandler.handler) {
-                a.splice(key, 1);
+            if (eventHandler.target === target) {
+                this.pageChangeEvents.splice(key, 1);
                 return;
             }
         }
@@ -671,10 +677,11 @@ cc.Class({
         } else {
             this.vertical = true;
         }
-        
+
         if (this._pageTotal > 1) {
             this._pageMove(event);
         }
+
         this._ckickCell(event);
     },
     _ckickCell: function (event) {
@@ -769,11 +776,10 @@ cc.Class({
         return cc.rect(p.x, p.y, node.width, node.height);
     },
     _updateCells: function () {
-        var viewBox = this._getBoundingBoxToWorld(this._view);
-
         if (this.horizontal) {
             if (this._scrollDirection == ScrollDirection.Left) {
                 if (this._maxCellIndex < this._count - 1) {
+                    var viewBox = this._getBoundingBoxToWorld(this._view);
                     do {
                         var node = this.content.getChildByTag(this._minCellIndex);
 
@@ -799,6 +805,7 @@ cc.Class({
 
             } else if (this._scrollDirection == ScrollDirection.Rigth) {
                 if (this._minCellIndex > 0) {
+                    var viewBox = this._getBoundingBoxToWorld(this._view);
                     do {
                         var node = this.content.getChildByTag(this._maxCellIndex);
 
@@ -824,6 +831,7 @@ cc.Class({
         } else {
             if (this._scrollDirection == ScrollDirection.Up) {
                 if (this._maxCellIndex < this._count - 1) {
+                    var viewBox = this._getBoundingBoxToWorld(this._view);
                     do {
                         var node = this.content.getChildByTag(this._minCellIndex);
 
@@ -847,6 +855,7 @@ cc.Class({
                 }
             } else if (this._scrollDirection == ScrollDirection.Down) {
                 if (this._minCellIndex > 0) {
+                    var viewBox = this._getBoundingBoxToWorld(this._view);
                     do {
                         var node = this.content.getChildByTag(this._maxCellIndex);
 
@@ -952,7 +961,7 @@ cc.Class({
     update: function (dt) {
         this._super(dt);
 
-        if (!this._initSuccess || this._pageTotal == 1) {
+        if (!this._initSuccess || this._cellCount === this._showCellCount || this._pageTotal == 1) {
             return;
         }
 

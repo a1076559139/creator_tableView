@@ -1,5 +1,11 @@
 {
-  "excludeScenes": [],
+  "excludeScenes": [
+    "2d2f792f-a40c-49bb-a189-ed176a246e49"
+  ],
+  "includeAnySDK": false,
+  "includeSdk": [
+    "anysdk"
+  ],
   "orientation": {
     "landscapeLeft": true,
     "landscapeRight": true,
@@ -7,7 +13,7 @@
     "upsideDown": false
   },
   "packageName": "org.cocos2d.hello_world",
-  "startScene": "2d2f792f-a40c-49bb-a189-ed176a246e49",
+  "startScene": "664df2af-804a-4474-88a9-7b2309c52ef2",
   "title": "hello_world",
-  "webOrientation": "landscape"
+  "webOrientation": "portrait"
 }
