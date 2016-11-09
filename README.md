@@ -1,5 +1,4 @@
 # tableView
-#  作者：zp
 
 # cell:
 //cell的初始化方法，tableView创建cell时会调用此方法
