@@ -8,7 +8,6 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-
     },
     show: function (text) {
         cc.log(text);
@@ -33,5 +32,5 @@ cc.Class({
     //上一页(pageview下有效)
     lastPage: function () {
         this.tableView.getComponent(tableView).scrollToLastPage();
-    }
+    },
 });

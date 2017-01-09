@@ -130,7 +130,21 @@ var tableView = cc.Class({
         _cellPoolCache: {},
     },
     onLoad: function () {
+        var self = this;
         tableView._tableView.push(this);
+
+        //当销毁tableView的时候，回收cell
+        var destroy = this.node.destroy;
+        this.node.destroy = function () {
+            self.clear();
+            destroy.call(self.node);
+        }
+
+        var _onPreDestroy = this.node._onPreDestroy;
+        this.node._onPreDestroy = function () {
+            self.clear();
+            _onPreDestroy.call(self.node);
+        }
     },
     onDestroy: function () {
         cc.eventManager.removeListener(this._touchListener);
@@ -142,7 +156,6 @@ var tableView = cc.Class({
             }
         }
     },
-
     _addListenerToTouchLayer: function () {
         this._touchLayer = new cc.Node();
         var widget = this._touchLayer.addComponent(cc.Widget);

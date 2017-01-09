@@ -22,7 +22,7 @@ init(index, data) ;
  //tableView的静态方法
 ```
 require('tableView').reload();//刷新当前有效的所有tableView
-require('tableView').clear();//清空回收当前有效的所有tableView,有tableView被销毁之前需要调用此方法,也可以调用tableView的实例方法clear
+require('tableView').clear();//清空回收当前有效的所有tableView
 ```
 
  //tableView的实例方法
@@ -33,7 +33,7 @@ require('tableView').clear();//清空回收当前有效的所有tableView,有tab
 initTableView (count, data)
 ```
 
- //清空回收当前tableView,tableView被销毁之前需要调用此方法
+ //清空回收当前tableView
 ```
 clear()
 ```
