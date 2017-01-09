@@ -121,7 +121,6 @@ getMaxScrollOffset()
 将预制拖动到tableView的Cell栏中，横向纵向滚动、惯性滑动等在ScrollView下调整，ViewType和Type等属性在tableView中调整
 通过外部脚本调用tableView中的initTableView方法对其进行初始化，第一个参数是有多少cell，第二个参数是会传递给cell的数据(可以为空) 
 *    ViewType为scroll时，滚动列表表现与scrollview一致，但却会复用节点，提高性能
-*    ViewType为single时，在scroll的基础上使cell在滑动方向上不会出现半个
 *    ViewType为flip时，在scroll的基础上使滚动列表表现为翻页效果
 *    Direction，规定cell的排列方向
 *    isFill，当节点不能铺满一个页时，选择isFill为true会填充节点铺满整个view
