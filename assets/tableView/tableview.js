@@ -48,6 +48,8 @@ var orderBy = function (o, key, desc) {
 var tableView = cc.Class({
     extends: cc.ScrollView,
     editor: CC_EDITOR && {
+        menu: "添加 UI 组件/tableView(自定义)",
+        help: "https://github.com/a1076559139/creator_tableView",
         inspector: 'packages://tableView/inspector.js',
     },
     properties: {
