@@ -1,3 +1,4 @@
+var tableView = 'tableView';
 cc.Class({
     extends: cc.Component,
 
@@ -22,17 +23,15 @@ cc.Class({
         return array;
     },
     initView: function () {
-        var data = this._getdata(200);
-        this.tableView.getComponent('tableview2').initTableView(data.length, { array: data, target: this });
+        var data = this._getdata(100);
+        this.tableView.getComponent(tableView).initTableView(data.length, { array: data, target: this });
     },
+    //下一页(pageview下有效)
     nextPage: function () {
-        this.tableView.getComponent('tableview2').scrollToNextPage();
-        // this.tableView.scrollToOffset({ x: 0, y: -200 }, 1);
-        // this.tableView.scrollToOffset({ x: -200, y: 0 }, 1);
+        this.tableView.getComponent(tableView).scrollToNextPage();
     },
+    //上一页(pageview下有效)
     lastPage: function () {
-        this.tableView.getComponent('tableview2').scrollToLastPage();
-        // this.tableView.scrollToOffset({ x: 0, y: 200 }, 1);
-        // this.tableView.scrollToOffset({ x: 200, y: 0 }, 1);
+        this.tableView.getComponent(tableView).scrollToLastPage();
     }
 });

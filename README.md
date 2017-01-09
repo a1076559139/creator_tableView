@@ -1,5 +1,15 @@
 # tableView
 
+# 缺点
+```
+1、不支持动态添加删除cell
+2、不支持极快的滑动列表
+```
+# 优点
+```
+1、显示大量cell时节省内存及cpu
+```
+
 # cell:
 //cell的初始化方法，tableView创建cell时会调用此方法
 ```
@@ -9,11 +19,40 @@ init(index, data) ;
 ```
 
 # tableView:
+ //tableView的静态方法
+```
+require('tableView').reload();//刷新当前有效的所有tableView
+require('tableView').clear();//清空回收当前有效的所有tableView,有tableView被销毁之前需要调用此方法,也可以调用tableView的实例方法clear
+```
+
+ //tableView的实例方法
  //tableView的初始化方法
 ```
 @parma count Number cell的总个数
 @parma data 自定义 此data会作为初始化cell时的第二个参数
 initTableView (count, data)
+```
+
+ //清空回收当前tableView,tableView被销毁之前需要调用此方法
+```
+clear()
+```
+
+//获得初始初始化tableView时传递的数据
+```
+getData()
+```
+
+//获得目前正在展示的所有cell,将以数组的形式作为回掉的参数传递
+```
+@parma callback function 
+getCells(callback)
+```
+
+//获得目前正在展示的行或列范围,将以数组的形式作为回掉的参数传递
+```
+@parma callback function 
+getGroupsRange(callback)
 ```
 
 //翻页到某一页
@@ -92,3 +131,5 @@ getMaxScrollOffset()
 那么tableView中content的大小就应该是100*100，tableView所在节点的height应该是100，其它(大小、锚点、位置)任意，并且选择ViewType为flip，Direction为LEFT_TO_RIGHT__TOP_TO_BOTTOM
 在脚本中获取到tableView，并调用initTableView方法
 ```
+
+# 具体查看本示例

@@ -11,7 +11,7 @@ module.exports = {
 
   messages: {
     'say-hello' () {
-        Editor.log('Hello World!');
+        Editor.log('横向滚动时，view的宽必须与tableView所在节点的宽相同，纵向滚动时，view的高必须与tableView所在节点的高相同');
     }
   },
 };

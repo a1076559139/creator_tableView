@@ -2,35 +2,66 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        _isCellInit_: false
+        tableView: {
+            default: null,
+            visible: false
+        },
+        _isCellInit_: false,
+        _longClicked_: false,
     },
 
     //不可以重写
     _cellAddMethodToNode_: function () {
         this.node.clicked = this.clicked.bind(this);
     },
-    _cellInit_: function () {
+    _cellAddTouch_: function () {
+        this.node.on(cc.Node.EventType.TOUCH_START, function (event) {
+            if (this.node.active === true && this.node.opacity !== 0) {
+                if (!this._longClicked_) {
+                    this._longClicked_ = true;
+                    this.scheduleOnce(this._longClicked, 1.5);
+                }
+            }
+        }, this);
+        this.node.on(cc.Node.EventType.TOUCH_MOVE, function () {
+            if (this._longClicked_) {
+                this._longClicked_ = false;
+                this.unschedule(this._longClicked);
+            }
+        }, this);
+        this.node.on(cc.Node.EventType.TOUCH_END, function () {
+            this.clicked();
+            if (this._longClicked_) {
+                this._longClicked_ = false;
+                this.unschedule(this._longClicked);
+            }
+        }, this);
+        this.node.on(cc.Node.EventType.TOUCH_CANCEL, function () {
+            if (this._longClicked_) {
+                this._longClicked_ = false;
+                this.unschedule(this._longClicked);
+            }
+        }, this);
+    },
+    _cellInit_: function (tableView) {
         if (!this._isCellInit_) {
+            this.tableView = tableView;
             this._cellAddMethodToNode_();
+            this._cellAddTouch_();
             this._isCellInit_ = true;
         }
     },
-
+    _longClicked: function () {
+        this._longClicked_ = false;
+        this.node.emit(cc.Node.EventType.TOUCH_CANCEL);
+        this.longClicked();
+    },
     //可以重写的方法
 
-    // //出现时调用
-    // reuse: function () {
-
-    // },
-
-    // //消失时调用
-    // unuse: function () {
-
-    // },
-
     //需要重写的方法
+    longClicked: function () {
 
-    //cell中的子节点可以使用on事件
+    },
     //被点击时相应的方法
     clicked: function () {
 
@@ -40,11 +71,4 @@ cc.Class({
     init: function (index, data, group) {
 
     },
-
-
-
-    // called every frame, uncomment this function to activate update callback
-    // update: function (dt) {
-
-    // },
 });

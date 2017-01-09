@@ -7,7 +7,7 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-        this.tableView.getComponent('tableview2').addPageEvent(this.node, 'pageLabel', 'setPage');
+        this.tableView.getComponent('tableView').addPageEvent(this.node, 'pageLabel', 'setPage');
     },
     setPage: function (page, totalNum) {
         this.getComponent(cc.Label).string = page + '/' + totalNum;

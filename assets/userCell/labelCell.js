@@ -2,7 +2,8 @@ cc.Class({
     extends: require('viewCell'),
 
     properties: {
-        label: cc.Label,
+        index: cc.Label,
+        group: cc.Label,
     },
 
     // use this for initialization
@@ -10,20 +11,17 @@ cc.Class({
 
     },
     init: function (index, data, group) {
-        // this._init(data.array[index], data.target, group);
-        this.label.string = index;
-    },
-    _init: function (data, target, group) {//当pagevie模式下group参数才有效
-        // this._target = target;
-        // if (!data) {
-        //     this.label.string = '空';
-        //     return;
-        // }
-
-        // this.label.string = data.name;
-        // this.label.string = group;
+        if (index >= data.array.length) {
+            this.index.string = '越界';
+            this.group.string = group;
+            return;
+        }
+        this._target = data.target;
+        this._data = data.array[index];
+        this.index.string = index;
+        this.group.string = group;
     },
     clicked: function () {
-        // this._target.show(this.label.string);
+        this._target.show('下标:'+this.index.string+',组:'+this.group.string);
     }
 });

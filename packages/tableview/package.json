@@ -2,7 +2,7 @@
   "name": "tableview",
   "version": "0.0.1",
   "description": "一份简单的扩展包",
-  "author": "Cocos Creator",
+  "author": "zp",
   "main": "main.js",
   "main-menu": {
     "自定义控件/tableview": {
