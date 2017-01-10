@@ -18,13 +18,15 @@ init(index, data) ;
 ```
 
 # tableView:
- //tableView的静态方法
+tableView的静态方法
+---
 ```
 require('tableView').reload();//刷新当前有效的所有tableView
 require('tableView').clear();//清空回收当前有效的所有tableView
 ```
 
- //tableView的实例方法
+tableView的实例方法
+---
  //tableView的初始化方法
 ```
 @parma count Number cell的总个数
