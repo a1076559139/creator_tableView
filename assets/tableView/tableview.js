@@ -150,7 +150,9 @@ var tableView = cc.Class({
     },
     onDestroy: function () {
         cc.eventManager.removeListener(this._touchListener);
-
+        if (CC_JSB) {
+            this._touchListener.release();
+        }
         for (var key in tableView._tableView) {
             if (tableView._tableView[key] === this) {
                 tableView._tableView.splice(key);
