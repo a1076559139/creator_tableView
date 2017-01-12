@@ -1,5 +1,8 @@
 # tableView
 
+使用前需要将{示例项目目录}\packages\tableView文件夹拷贝到你的项目中去
+---
+
 # 缺点
 ```
 1、不支持动态添加删除cell
