@@ -2,7 +2,7 @@
 
 使用前需要将{示例项目目录}\packages\tableView文件夹拷贝到你的项目中去。</br>
 web : 线上测试稳定。</br>
-native ：未测试。
+native ：未测试。</br>
 ---
 
 # 缺点
