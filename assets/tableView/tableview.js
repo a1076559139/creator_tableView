@@ -1007,3 +1007,5 @@ tableView.clear = function () {
         tableView._tableView[key].clear();
     }
 }
+
+cc.tableView = module.export = tableView;
