@@ -202,17 +202,6 @@ var tableView = cc.Class({
             this._touchListener.retain();
         }
         cc.eventManager.addListener(this._touchListener, this._touchLayer);
-
-        if (this.verticalScrollBar) {
-            this.verticalScrollBar.node.on('size-changed', function () {
-                this._updateScrollBar(this._getHowMuchOutOfBoundary());
-            }, this);
-        }
-        if (this.horizontalScrollBar) {
-            this.horizontalScrollBar.node.on('size-changed', function () {
-                this._updateScrollBar(this._getHowMuchOutOfBoundary());
-            }, this);
-        }
     },
     _setStopPropagation: function () {
         this.node.on('touchstart', function (event) {
@@ -500,10 +489,19 @@ var tableView = cc.Class({
                 this.vertical = true;
                 this.horizontal = false;
             }
-
             this._view = this.content.parent;
+            //为scrollBar添加size改变的监听
+            this.verticalScrollBar && this.verticalScrollBar.node.on('size-changed', function () {
+                this._updateScrollBar(this._getHowMuchOutOfBoundary());
+            }, this);
+            this.horizontalScrollBar && this.horizontalScrollBar.node.on('size-changed', function () {
+                this._updateScrollBar(this._getHowMuchOutOfBoundary());
+            }, this);
+            //给触摸层添加时间
             this._addListenerToTouchLayer();
+            //禁止tableView点击事件向父级传递
             this._setStopPropagation();
+            //存在Widget则在下一帧进行初始化
             if (this.node.getComponent(cc.Widget) || this._view.getComponent(cc.Widget) || this.content.getComponent(cc.Widget)) {
                 this.scheduleOnce(this._initTableView);
                 this._scheduleInit = true;
