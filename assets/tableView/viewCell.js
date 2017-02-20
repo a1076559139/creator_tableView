@@ -44,8 +44,8 @@ cc.Class({
         }, this);
     },
     _cellInit_: function (tableView) {
+        this.tableView = tableView;
         if (!this._isCellInit_) {
-            this.tableView = tableView;
             this._cellAddMethodToNode_();
             this._cellAddTouch_();
             this._isCellInit_ = true;
