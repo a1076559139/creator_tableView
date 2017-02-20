@@ -218,7 +218,7 @@ var tableView = cc.Class({
         });
     },
     //初始化cell
-    _initCell: function (cell) {
+    _initCell: function (cell, reload) {
         if ((this.ScrollModel === ScrollModel.Horizontal && this.Direction === Direction.TOP_TO_BOTTOM__LEFT_TO_RIGHT) || (this.ScrollModel === ScrollModel.Vertical && this.Direction === Direction.LEFT_TO_RIGHT__TOP_TO_BOTTOM)) {
             var tag = cell.tag * cell.childrenCount;
             for (var index = 0; index < cell.childrenCount; ++index) {
@@ -226,7 +226,8 @@ var tableView = cc.Class({
                 var viewCell = node.getComponent('viewCell');
                 if (viewCell) {
                     viewCell._cellInit_(this);
-                    viewCell.init(tag + index, this._data, cell.tag);
+                    // viewCell.init(tag + index, this._data, cell.tag);
+                    viewCell.init(tag + index, this._data, reload, [cell.tag, index]);
                 }
             }
         } else {
@@ -238,7 +239,8 @@ var tableView = cc.Class({
                     var viewCell = node.getComponent('viewCell');
                     if (viewCell) {
                         viewCell._cellInit_(this);
-                        viewCell.init(this._showCellCount * index + cell.tag % this._showCellCount + tagnum, this._data, index + tag * cell.childrenCount);
+                        // viewCell.init(this._showCellCount * index + cell.tag % this._showCellCount + tagnum, this._data, index + tag * cell.childrenCount);
+                        viewCell.init(this._showCellCount * index + cell.tag % this._showCellCount + tagnum, this._data, reload, [index + tag * cell.childrenCount, index]);
                     }
                 }
             } else {
@@ -247,7 +249,8 @@ var tableView = cc.Class({
                     var viewCell = node.getComponent('viewCell');
                     if (viewCell) {
                         viewCell._cellInit_(this);
-                        viewCell.init(index * this._count + cell.tag, this._data, index);
+                        // viewCell.init(index * this._count + cell.tag, this._data, index);
+                        viewCell.init(index * this._count + cell.tag, this._data, reload, [index, index]);
                     }
                 }
             }
@@ -356,7 +359,7 @@ var tableView = cc.Class({
             this._data = data;
         }
         for (var index = this.content.childrenCount - 1; index >= 0; --index) {
-            this._initCell(this.content.children[index]);
+            this._initCell(this.content.children[index], true);
         }
     },
     _getCellPoolCacheName: function () {
@@ -802,7 +805,7 @@ var tableView = cc.Class({
         if (this.ViewType === ViewType.Flip) {
             if (this.ScrollModel === ScrollModel.Horizontal) {
                 y = 0;
-                if (Math.abs(event.getLocation().x - event.getStartLocation().x) > 100) {
+                if (Math.abs(event.getLocation().x - event.getStartLocation().x) > this._view.width / 3) {
                     if (this._scrollDirection === ScrollDirection.Left) {
                         if (this._page < this._pageTotal) {
                             this._changePageNum(1);
@@ -819,7 +822,7 @@ var tableView = cc.Class({
                 }
             } else {
                 x = 0;
-                if (Math.abs(event.getLocation().y - event.getStartLocation().y) > 100) {
+                if (Math.abs(event.getLocation().y - event.getStartLocation().y) > this._view.height / 3) {
                     if (this._scrollDirection === ScrollDirection.Up) {
                         if (this._page < this._pageTotal) {
                             this._changePageNum(1);
@@ -951,7 +954,7 @@ var tableView = cc.Class({
         var offset = this.getScrollOffset();
         var offsetMax = this.getMaxScrollOffset();
         if (this.ScrollModel === ScrollModel.Horizontal) {
-            if (offset.x >= offsetMax.x || offset.x <= 0) {
+            if (offset.x >= 0 || offset.x <= -offsetMax.x) {
                 return;
             }
         } else {

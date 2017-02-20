@@ -10,18 +10,18 @@ cc.Class({
     onLoad: function () {
 
     },
-    init: function (index, data, group) {
+    init: function (index, data, reload, group) {
         if (index >= data.array.length) {
             this.index.string = '越界';
-            this.group.string = group;
+            this.group.string = group.toString();
             return;
         }
         this._target = data.target;
         this._data = data.array[index];
         this.index.string = index;
-        this.group.string = group;
+        this.group.string = group.toString();
     },
     clicked: function () {
-        this._target.show('下标:'+this.index.string+',组:'+this.group.string);
+        this._target.show('下标:' + this.index.string + ',组:' + this.group.string);
     }
 });
