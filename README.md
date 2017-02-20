@@ -19,7 +19,9 @@ native ：未测试。</br>
 ```
 @parma index Number cell的排序下标
 @parma data 自定义 初始化tableView时传入的data
-init(index, data) ;
+@parma reload bool 当前是否执行的是tableView.reload()操作
+@parma group Array 得到当前组
+init(index, data, reload, group) ;
 ```
 
 # tableView:
