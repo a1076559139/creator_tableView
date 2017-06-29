@@ -22,14 +22,14 @@ cc.Class({
     },
     initView: function () {
         var data = this._getdata(100);
-        this.tableView.getComponent(cc.tableView).initTableView(data.length, { array: data, target: this });
+        this.tableView.getComponent('tableView').initTableView(data.length, { array: data, target: this });
     },
     //下一页(pageview下有效)
     nextPage: function () {
-        this.tableView.getComponent(cc.tableView).scrollToNextPage();
+        this.tableView.getComponent('tableView').scrollToNextPage();
     },
     //上一页(pageview下有效)
     lastPage: function () {
-        this.tableView.getComponent(cc.tableView).scrollToLastPage();
+        this.tableView.getComponent('tableView').scrollToLastPage();
     },
 });
