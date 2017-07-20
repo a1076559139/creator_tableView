@@ -388,7 +388,7 @@
     },
     "horizontal": false,
     "vertical": true,
-    "inertia": true,
+    "inertia": false,
     "brake": 0.5,
     "elastic": true,
     "bounceDuration": 1,
@@ -420,7 +420,7 @@
       "__uuid__": "be687b62-0d4a-4761-b460-4a067d698da1"
     },
     "_N$ScrollModel": 1,
-    "_N$ViewType": 0
+    "_N$ViewType": 1
   },
   {
     "__type__": "cc.PrefabInfo",

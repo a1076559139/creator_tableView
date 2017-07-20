@@ -19,7 +19,7 @@ declare module cc {
 	@param obj A JavaScript string containing zero or more substitution strings.
 	@param subst JavaScript objects with which to replace substitution strings within msg. This gives you additional control over the format of the output. 
 	*/
-	export function error(obj : Any, subst : Any) : void;	
+	export function error(obj : any, subst : any) : void;	
 	/** !#en
 	Outputs a warning message to the Cocos Creator Console (editor) or Web Console (runtime).
 	- In Cocos Creator, warning is yellow.
@@ -31,13 +31,13 @@ declare module cc {
 	@param obj A JavaScript string containing zero or more substitution strings.
 	@param subst JavaScript objects with which to replace substitution strings within msg. This gives you additional control over the format of the output. 
 	*/
-	export function warn(obj : Any, subst : Any) : void;	
+	export function warn(obj : any, subst : any) : void;	
 	/** !#en Outputs a message to the Cocos Creator Console (editor) or Web Console (runtime).
 	!#zh 输出一条消息到 Cocos Creator 编辑器的 Console 或运行时 Web 端的 Console 中。
 	@param obj A JavaScript string containing zero or more substitution strings.
 	@param subst JavaScript objects with which to replace substitution strings within msg. This gives you additional control over the format of the output. 
 	*/
-	export function log(obj : Any, subst : Any) : void;	
+	export function log(obj : any, subst : any) : void;	
 	/** !#en
 	Outputs an informational message to the Cocos Creator Console (editor) or Web Console (runtime).
 	- In Cocos Creator, info is blue.
@@ -80,6 +80,9 @@ declare module cc {
 	``` 
 	*/
 	export function follow(followedNode : Node, rect : Rect) : Action;	
+	/** Points setter 
+	*/
+	export function setPoints(points : any[]) : void;	
 	/** !#en Creates an action with a Cardinal Spline array of points and tension.
 	!#zh 按基数样条曲线轨迹移动到目标位置。
 	@param points array of control points
@@ -91,6 +94,9 @@ declare module cc {
 	``` 
 	*/
 	export function cardinalSplineTo(duration : number, points : any[], tension : number) : ActionInterval;	
+	/** update position of target 
+	*/
+	export function updatePosition(newPos : Vec2) : void;	
 	/** !#en Creates an action with a Cardinal Spline array of points and tension.
 	!#zh 按基数样条曲线轨迹移动指定的距离。 
 	*/
@@ -1087,7 +1093,10 @@ declare module cc {
 	};
 	``` 
 	*/
-	export function Class(options : { name? : string; extends? : Function; ctor? : Function; properties? : any; statics? : any; mixins? : Function[]; editor? : any; update? : Function; lateUpdate? : Function; onLoad? : Function; start? : Function; onEnable? : Function; onDisable? : Function; onDestroy? : Function; onFocusInEditor? : Function; onLostFocusInEditor? : Function; onRestore? : Function; _getLocalBounds? : Function; }) : Function;	
+	export function Class(options : { name?; extends?; ctor?; properties?; statics?; mixins?; editor? : { requireComponent? : Component; disallowMultiple? : Component; menu? : string; executeInEditMode? : boolean; playOnFocus? : boolean; inspector? : string; icon? : string; help? : string; } ; update?; lateUpdate?; onLoad?; start?; onEnable?; onDisable?; onDestroy?; onFocusInEditor?; onLostFocusInEditor?; onRestore?; _getLocalBounds?; }) : Function;	
+	/** Return all super classes 
+	*/
+	export function getInheritanceChain(constructor : Function) : Function[];	
 	/** whether enable accelerometer event 
 	*/
 	export function setAccelerometerEnabled(isEnable : boolean) : void;	
@@ -1861,7 +1870,7 @@ declare module cc {
 	/** !#en Enum for debug modes.
 	!#zh 调试模式 */
 	export enum DebugMode {		
-		NONE. = 0,
+		NONE = 0,
 		INFO = 0,
 		WARN = 0,
 		ERROR = 0,
@@ -1869,136 +1878,8 @@ declare module cc {
 		WARN_FOR_WEB_PAGE = 0,
 		ERROR_FOR_WEB_PAGE = 0,	
 	}		
-		/** !#en Base class cc.Action for action classes.
-		!#zh Action 类是所有动作类型的基类。 */
-		export class Action {		
-		/** !#en
-		to copy object with deep copy.
-		returns a clone of action.
-		!#zh 返回一个克隆的动作。 
-		*/
-		clone() : Action;		
-		/** !#en
-		return true if the action has finished.
-		!#zh 如果动作已完成就返回 true。 
-		*/
-		isDone() : boolean;		
-		/** !#en get the target.
-		!#zh 获取当前目标节点。 
-		*/
-		getTarget() : Node;		
-		/** !#en The action will modify the target properties.
-		!#zh 设置目标节点。 
-		*/
-		setTarget(target : Node) : void;		
-		/** !#en get the original target.
-		!#zh 获取原始目标节点。 
-		*/
-		getOriginalTarget() : Node;		
-		/** !#en get tag number.
-		!#zh 获取用于识别动作的标签。 
-		*/
-		getTag() : number;		
-		/** !#en set tag number.
-		!#zh 设置标签，用于识别动作。 
-		*/
-		setTag(tag : number) : void;		
-		/** !#en Default Action tag.
-		!#zh 默认动作标签。 */
-		TAG_INVALID : number;	
-	}		
-		/** !#en
-		Base class actions that do have a finite time duration. <br/>
-		Possible actions: <br/>
-		- An action with a duration of 0 seconds. <br/>
-		- An action with a duration of 35.5 seconds.
-		
-		Infinite time actions are valid
-		!#zh 有限时间动作，这种动作拥有时长 duration 属性。 */
-		export class FiniteTimeAction extends Action {		
-		/** !#en get duration of the action. (seconds).
-		!#zh 获取动作以秒为单位的持续时间。 
-		*/
-		getDuration() : number;		
-		/** !#en set duration of the action. (seconds).
-		!#zh 设置动作以秒为单位的持续时间。 
-		*/
-		setDuration(duration : number) : void;		
-		/** !#en
-		Returns a reversed action. <br />
-		For example: <br />
-		- The action will be x coordinates of 0 move to 100. <br />
-		- The reversed action will be x of 100 move to 0.
-		- Will be rewritten
-		!#zh 返回一个新的动作，执行与原动作完全相反的动作。 
-		*/
-		reverse() : void;		
-		/** !#en
-		to copy object with deep copy.
-		returns a clone of action.
-		!#zh 返回一个克隆的动作。 
-		*/
-		clone() : FiniteTimeAction;	
-	}		
-		/** !#en Base class for Easing actions.
-		!#zh 所有缓动动作基类，用于修饰 ActionInterval。 */
-		export class ActionEase extends ActionInterval {	
-	}		
-		/** !#en Base class for Easing actions with rate parameters
-		!#zh 拥有速率属性的缓动动作基类。 */
-		export class EaseRateAction extends ActionEase {	
-	}		
-		/** !#en Ease Elastic abstract class.
-		!#zh 弹性缓动动作基类。 */
-		export class EaseElastic extends ActionEase {	
-	}		
-		/** !#en cc.EaseBounce abstract class.
-		!#zh 反弹缓动动作基类。 */
-		export class EaseBounce extends ActionEase {	
-	}		
-		/** !#en Instant actions are immediate actions. They don't have a duration like the ActionInterval actions.
-		!#zh 即时动作，这种动作立即就会执行，继承自 FiniteTimeAction。 */
-		export class ActionInstant extends FiniteTimeAction {	
-	}		
-		/** !#en
-		<p> An interval action is an action that takes place within a certain period of time. <br/>
-		It has an start time, and a finish time. The finish time is the parameter<br/>
-		duration plus the start time.</p>
-		
-		<p>These CCActionInterval actions have some interesting properties, like:<br/>
-		- They can run normally (default)  <br/>
-		- They can run reversed with the reverse method   <br/>
-		- They can run with the time altered with the Accelerate, AccelDeccel and Speed actions. </p>
-		
-		<p>For example, you can simulate a Ping Pong effect running the action normally and<br/>
-		then running it again in Reverse mode. </p>
-		!#zh 时间间隔动作，这种动作在已定时间内完成，继承 FiniteTimeAction。 */
-		export class ActionInterval extends FiniteTimeAction {		
-		/** !#en Implementation of ease motion.
-		!#zh 缓动运动。
-		
-		@example 
-		
-		action.easeing(cc.easeIn(3.0));,```js
-		action.easeing(cc.easeIn(3.0));
-		``` 
-		*/
-		easing(easeObj : any) : ActionInterval;		
-		/** !#en
-		Repeats an action a number of times.
-		To repeat an action forever use the CCRepeatForever action.
-		!#zh 重复动作可以按一定次数重复一个动作，使用 RepeatForever 动作来永远重复一个动作。 
-		*/
-		repeat(times : void) : ActionInterval;		
-		/** !#en
-		Repeats an action for ever.  <br/>
-		To repeat the an action for a limited number of times use the Repeat action. <br/>
-		!#zh 永远地重复一个动作，有限次数内重复一个动作请使用 Repeat 动作。 
-		*/
-		repeatForever() : ActionInterval;	
-	}		
 		/** !#en cc.audioEngine is the singleton object, it provide simple audio APIs.
-		!#zn
+		!#zh
 		cc.audioengine是单例对象。<br/>
 		主要用来播放背景音乐和音效，背景音乐同一时间只能播放一个，而音效则可以同时播放多个。<br/>
 		注意：<br/>
@@ -2012,7 +1893,6 @@ declare module cc {
 		注意：音乐播放接口不支持多音轨，同一时间只能播放一个音乐。
 		@param url The path of the music file without filename extension.
 		@param loop Whether the music loop or not.
-		@param immediate Whether immediately play music.
 		
 		@example 
 		```js
@@ -2020,7 +1900,7 @@ declare module cc {
 		cc.audioEngine.playMusic(path, false);
 		``` 
 		*/
-		playMusic(url : string, loop : boolean, immediate : boolean) : void;		
+		playMusic(url : string, loop : boolean) : void;		
 		/** !#en Stop playing music.
 		!#zh 停止当前音乐。
 		@param releaseData If release the music data or not.As default value is false.
@@ -2235,7 +2115,7 @@ declare module cc {
 		var clip = cc.AnimationClip.createWithSpriteFrames(spriteFrames, 10);
 		``` 
 		*/
-		createWithSpriteFrames(spriteFrames : [cc.SpriteFrame], sample : number) : AnimationClip;	
+		createWithSpriteFrames(spriteFrames : [SpriteFrame], sample : number) : AnimationClip;	
 	}		
 		/** !#en
 		The AnimationState gives full control over animation playback process.
@@ -2299,7 +2179,15 @@ declare module cc {
 		/** !#en The abstract interface for all playing animation.
 		!#zh 所有播放动画的抽象接口。 */
 		export class AnimationNodeBase extends Playable {		
-		constructor();		
+		constructor();	
+	}		
+		/** !#en The collection and instance of playing animations.
+		!#zh 动画曲线的集合，根据当前时间计算出每条曲线的状态。 */
+		export class AnimationNode extends AnimationNodeBase {		
+		/** 
+		@param timingInput This dictionary is used as a convenience for specifying the timing properties of an Animation in bulk. 
+		*/
+		constructor(animator : Animator, curves? : AnimCurve[], timingInput? : any);		
 		/** !#en The curves list.
 		!#zh 曲线列表。 */
 		curves : AnimCurve[];		
@@ -2323,12 +2211,144 @@ declare module cc {
 		/** !#en The animation's playback speed. 1 is normal playback speed.
 		!#zh 播放速率。 */
 		speed : number;		
-		/** !#en Wrapping mode of the playing animation.
-		!#zh 动画循环方式。 */
+		/** !#en
+		Wrapping mode of the playing animation.
+		Notice : dynamic change wrapMode will reset time and repeatCount property
+		!#zh
+		动画循环方式。
+		需要注意的是，动态修改 wrapMode 时，会重置 time 以及 repeatCount */
 		wrapMode : WrapMode;		
 		/** !#en The current time of this animation in seconds.
 		!#zh 动画当前的时间，秒。 */
 		time : number;	
+	}		
+		/** !#en Base class cc.Action for action classes.
+		!#zh Action 类是所有动作类型的基类。 */
+		export class Action {		
+		/** !#en
+		to copy object with deep copy.
+		returns a clone of action.
+		!#zh 返回一个克隆的动作。 
+		*/
+		clone() : Action;		
+		/** !#en
+		return true if the action has finished.
+		!#zh 如果动作已完成就返回 true。 
+		*/
+		isDone() : boolean;		
+		/** !#en get the target.
+		!#zh 获取当前目标节点。 
+		*/
+		getTarget() : Node;		
+		/** !#en The action will modify the target properties.
+		!#zh 设置目标节点。 
+		*/
+		setTarget(target : Node) : void;		
+		/** !#en get the original target.
+		!#zh 获取原始目标节点。 
+		*/
+		getOriginalTarget() : Node;		
+		/** !#en get tag number.
+		!#zh 获取用于识别动作的标签。 
+		*/
+		getTag() : number;		
+		/** !#en set tag number.
+		!#zh 设置标签，用于识别动作。 
+		*/
+		setTag(tag : number) : void;		
+		/** !#en Default Action tag.
+		!#zh 默认动作标签。 */
+		TAG_INVALID : number;	
+	}		
+		/** !#en
+		Base class actions that do have a finite time duration. <br/>
+		Possible actions: <br/>
+		- An action with a duration of 0 seconds. <br/>
+		- An action with a duration of 35.5 seconds.
+		
+		Infinite time actions are valid
+		!#zh 有限时间动作，这种动作拥有时长 duration 属性。 */
+		export class FiniteTimeAction extends Action {		
+		/** !#en get duration of the action. (seconds).
+		!#zh 获取动作以秒为单位的持续时间。 
+		*/
+		getDuration() : number;		
+		/** !#en set duration of the action. (seconds).
+		!#zh 设置动作以秒为单位的持续时间。 
+		*/
+		setDuration(duration : number) : void;		
+		/** !#en
+		Returns a reversed action. <br />
+		For example: <br />
+		- The action will be x coordinates of 0 move to 100. <br />
+		- The reversed action will be x of 100 move to 0.
+		- Will be rewritten
+		!#zh 返回一个新的动作，执行与原动作完全相反的动作。 
+		*/
+		reverse() : void;		
+		/** !#en
+		to copy object with deep copy.
+		returns a clone of action.
+		!#zh 返回一个克隆的动作。 
+		*/
+		clone() : FiniteTimeAction;	
+	}		
+		/** !#en Base class for Easing actions.
+		!#zh 所有缓动动作基类，用于修饰 ActionInterval。 */
+		export class ActionEase extends ActionInterval {	
+	}		
+		/** !#en Base class for Easing actions with rate parameters
+		!#zh 拥有速率属性的缓动动作基类。 */
+		export class EaseRateAction extends ActionEase {	
+	}		
+		/** !#en Ease Elastic abstract class.
+		!#zh 弹性缓动动作基类。 */
+		export class EaseElastic extends ActionEase {	
+	}		
+		/** !#en cc.EaseBounce abstract class.
+		!#zh 反弹缓动动作基类。 */
+		export class EaseBounce extends ActionEase {	
+	}		
+		/** !#en Instant actions are immediate actions. They don't have a duration like the ActionInterval actions.
+		!#zh 即时动作，这种动作立即就会执行，继承自 FiniteTimeAction。 */
+		export class ActionInstant extends FiniteTimeAction {	
+	}		
+		/** !#en
+		<p> An interval action is an action that takes place within a certain period of time. <br/>
+		It has an start time, and a finish time. The finish time is the parameter<br/>
+		duration plus the start time.</p>
+		
+		<p>These CCActionInterval actions have some interesting properties, like:<br/>
+		- They can run normally (default)  <br/>
+		- They can run reversed with the reverse method   <br/>
+		- They can run with the time altered with the Accelerate, AccelDeccel and Speed actions. </p>
+		
+		<p>For example, you can simulate a Ping Pong effect running the action normally and<br/>
+		then running it again in Reverse mode. </p>
+		!#zh 时间间隔动作，这种动作在已定时间内完成，继承 FiniteTimeAction。 */
+		export class ActionInterval extends FiniteTimeAction {		
+		/** !#en Implementation of ease motion.
+		!#zh 缓动运动。
+		
+		@example 
+		
+		action.easeing(cc.easeIn(3.0));,```js
+		action.easeing(cc.easeIn(3.0));
+		``` 
+		*/
+		easing(easeObj : any) : ActionInterval;		
+		/** !#en
+		Repeats an action a number of times.
+		To repeat an action forever use the CCRepeatForever action.
+		!#zh 重复动作可以按一定次数重复一个动作，使用 RepeatForever 动作来永远重复一个动作。 
+		*/
+		repeat(times : void) : ActionInterval;		
+		/** !#en
+		Repeats an action for ever.  <br/>
+		To repeat the an action for a limited number of times use the Repeat action. <br/>
+		!#zh 永远地重复一个动作，有限次数内重复一个动作请使用 Repeat 动作。 
+		*/
+		repeatForever() : ActionInterval;	
 	}		
 		/** !#en
 		cc.ActionManager is a class that can manage actions.<br/>
@@ -2522,8 +2542,12 @@ declare module cc {
 		!#zh 获取视图在游戏内容中的坐标原点。 
 		*/
 		getVisibleOrigin() : Vec2;		
-		/** !#en Pause the director's ticker.
-		!#zh 暂停正在运行的场景，该暂停只会停止 Scheduler，但是不会停止渲染和 UI 响应。 
+		/** !#en Pause the director's ticker, only involve the game logic execution.
+		It won't pause the rendering process nor the event manager.
+		If you want to pause the entier game including rendering, audio and event,
+		please use {{#crossLink "Game.pause"}}cc.game.pause{{/crossLink}}
+		!#zh 暂停正在运行的场景，该暂停只会停止游戏逻辑执行，但是不会停止渲染和 UI 响应。
+		如果想要更彻底得暂停游戏，包含渲染，音频和事件，请使用 {{#crossLink "Game.pause"}}cc.game.pause{{/crossLink}}。 
 		*/
 		pause() : void;		
 		/** !#en
@@ -2562,8 +2586,8 @@ declare module cc {
 		@param onLoaded callback, will be called after scene loaded. 
 		*/
 		preloadScene(sceneName : string, onLoaded: (error: Error) => void) : void;		
-		/** !#en Resume director after pause, if the current scene is not paused, nothing will happen.
-		!#zh 恢复暂停场景，恢复 Scheduler，如果当前场景没有暂停将没任何事情发生。 
+		/** !#en Resume game logic execution after pause, if the current scene is not paused, nothing will happen.
+		!#zh 恢复暂停场景的游戏逻辑，如果当前场景没有暂停将没任何事情发生。 
 		*/
 		resume() : void;		
 		/** !#en
@@ -2677,6 +2701,18 @@ declare module cc {
 		/** !#en cc.game is the singleton object for game related functions.
 		!#zh cc.game 是 Game 的实例，用来驱动整个游戏。 */
 		export class Game {		
+		/** Event triggered when game hide to background.
+		Please note that this event is not 100% guaranteed to be fired. */
+		EVENT_HIDE : string;		
+		/** Event triggered when game back to foreground
+		Please note that this event is not 100% guaranteed to be fired. */
+		EVENT_SHOW : string;		
+		/** Event triggered after game inited, at this point all engine objects and game scripts are loaded */
+		EVENT_GAME_INITED : string;		
+		/** Event triggered after renderer inited, at this point you will be able to use the render context */
+		EVENT_RENDERER_INITED : string;		
+		/** Key of config */
+		CONFIG_KEY : any;		
 		/** !#en The outer frame of the game canvas, parent of cc.container.
 		!#zh 游戏画布的外框，cc.container 的父类。 */
 		frame : any;		
@@ -2755,12 +2791,15 @@ declare module cc {
 		!#zh 执行一帧游戏循环。 
 		*/
 		step() : void;		
-		/** !#en Pause the game，pause main loop.
-		!#zh 暂停游戏，暂停的是整个主循环。 
+		/** !#en Pause the game main loop. This will pause:
+		game logic execution, rendering process, event manager, background music and all audio effects.
+		This is different with cc.director.pause which only pause the game logic execution.
+		!#zh 暂停游戏主循环。包含：游戏逻辑，渲染，事件处理，背景音乐和所有音效。这点和只暂停游戏逻辑的 cc.director.pause 不同。 
 		*/
 		pause() : void;		
-		/** !#en Resume the game from pause.
-		!#zh 继续游戏，继续的是整个主循环。 
+		/** !#en Resume the game from pause. This will resume:
+		game logic execution, rendering process, event manager, background music and all audio effects.
+		!#zh 恢复游戏主循环。包含：游戏逻辑，渲染，事件处理，背景音乐和所有音效。 
 		*/
 		resume() : void;		
 		/** !#en Check whether the game is paused.
@@ -2871,8 +2910,8 @@ declare module cc {
 		``` 
 		*/
 		getComponentInChildren(typeOrClassName : Function|string) : Component;		
-		/** !#en Returns all components of supplied type in any of its children.
-		!#zh 递归查找所有子节点中指定类型的组件。
+		/** !#en Returns all components of supplied type in self or any of its children.
+		!#zh 递归查找自身或所有子节点中指定类型的组件
 		
 		@example 
 		```js
@@ -2969,16 +3008,21 @@ declare module cc {
 		targetOff(target : any) : void;		
 		/** !#en
 		Executes an action, and returns the action that is executed.<br/>
-		The node becomes the action's target. Refer to cc.Action's getTarget()<br/>
-		Calling runAction while the node is not active won't have any effect.
+		The node becomes the action's target. Refer to cc.Action's getTarget() <br/>
+		Calling runAction while the node is not active won't have any effect. <br/>
+		Note：You shouldn't modify the action after runAction, that won't take any effect.<br/>
+		if you want to modify, when you define action plus.
 		!#zh
 		执行并返回该执行的动作。该节点将会变成动作的目标。<br/>
-		调用 runAction 时，节点自身处于不激活状态将不会有任何效果。
+		调用 runAction 时，节点自身处于不激活状态将不会有任何效果。<br/>
+		注意：你不应该修改 runAction 后的动作，将无法发挥作用，如果想进行修改，请在定义 action 时加入。
 		
 		@example 
 		```js
 		var action = cc.scaleTo(0.2, 1, 0.6);
 		node.runAction(action);
+		node.runAction(action).repeatForever(); // fail
+		node.runAction(action.repeatForever()); // right
 		``` 
 		*/
 		runAction(action : Action) : Action;		
@@ -3046,7 +3090,10 @@ declare module cc {
 		!#zh
 		cc.Scene 是 cc.Node 的子类，仅作为一个抽象的概念。<br/>
 		cc.Scene 和 cc.Node 有点不同，用户不应直接修改 cc.Scene。 */
-		export class Scene extends _BaseNode {	
+		export class Scene extends _BaseNode {		
+		/** !#en Indicates whether all (directly or indirectly) static referenced assets of this scene are releasable by default after scene unloading.
+		!#zh 指示该场景中直接或间接静态引用到的所有资源是否默认在场景切换后自动释放。 */
+		autoReleaseAssets : boolean;	
 	}		
 		/** !#en
 		Scheduler is responsible of triggering the scheduled callbacks.<br/>
@@ -3580,8 +3627,10 @@ declare module cc {
 		/** !#en cc.TMXObjectGroup represents the TMX object group.
 		!#zh TMXObjectGroup 用来表示 TMX 对象组。 */
 		export class TMXObjectGroup extends cc._Class {		
-		properties  - Properties from the group. They can be added using tilemap editors : any[];		
-		groupName   - Name of the group : string;		
+		/** Properties from the group. They can be added using tilemap editors. */
+		properties : any[];		
+		/** Name of the group */
+		groupName : string;		
 		/** <p>The cc.TMXObjectGroup's constructor. <br/>
 		This function will automatically be invoked when you create a node using new construction: "var node = new cc.TMXObjectGroup()".<br/>
 		Override it to extend its behavior, remember to call "this._super()" in the extended "ctor" function.</p> 
@@ -3827,6 +3876,15 @@ declare module cc {
 		``` 
 		*/
 		setTexture(texture : Texture2D) : void;		
+		/** !#en Set the opacity of all tiles
+		!#zh 设置所有 Tile 的透明度
+		
+		@example 
+		```js
+		tiledLayer.setTileOpacity(128);
+		``` 
+		*/
+		setTileOpacity(opacity : number) : void;		
 		/** !#en Gets layer size.
 		!#zh 获得层大小。
 		
@@ -4144,7 +4202,7 @@ declare module cc {
 		 }
 		``` 
 		*/
-		NodePool(poolHandlerComp : Function|string) : void;		
+		NodePool(poolHandlerComp : [Function|String]) : void;		
 		/** !#en The pool handler component, it could be the class name or the constructor.
 		!#zh 缓冲池处理组件，用于节点的回收和复用逻辑，这个属性可以是组件类名或组件的构造函数。 */
 		poolHandlerComp : Function|string;		
@@ -4228,124 +4286,6 @@ declare module cc {
 		!#zh 移除对象池中的所有对象，并且重置对象池。 
 		*/
 		drainAllPools() : void;	
-	}		
-		/** !#en
-		Base class for handling assets used in Fireball. This class can be instantiate.
-		
-		You may want to override:<br/>
-		- createNode<br/>
-		- cc.Object._serialize<br/>
-		- cc.Object._deserialize<br/>
-		!#zh
-		资源基类，该类可以被实例化。<br/>
-		
-		您可能需要重写：<br/>
-		- createNode <br/>
-		- cc.Object._serialize<br/>
-		- cc.Object._deserialize<br/> */
-		export class Asset extends RawAsset {		
-		constructor();		
-		/** !#en
-		Returns the url of this asset's first raw file, if none of rawFile exists,
-		it will returns an empty string.
-		!#zh 返回该资源的原始文件的 URL，如果不支持 RAW 文件，它将返回一个空字符串。 */
-		rawUrl : string;		
-		/** !#en
-		Returns the url of this asset's raw files, if none of rawFile exists,
-		it will returns an empty array.
-		!#zh 返回该资源的原文件的 URL 数组，如果不支持 RAW 文件，它将返回一个空数组。 */
-		rawUrls : String[];		
-		/** !#en
-		Create a new node using this asset in the scene.<br/>
-		If this type of asset dont have its corresponding node type, this method should be null.
-		!#zh
-		使用该资产在场景中创建一个新节点。<br/>
-		如果这类资产没有相应的节点类型，该方法应该是空的。 
-		*/
-		createNode(callback: (error: string, node: any) => void) : void;	
-	}		
-		/** !#en Class for audio data handling.
-		!#zh 音频资源类。 */
-		export class AudioClip extends RawAsset {		
-		constructor();	
-	}		
-		/** !#en Class for BitmapFont handling.
-		!#zh 位图字体资源类。 */
-		export class BitmapFont extends RawAsset {		
-		constructor();	
-	}		
-		/** !#en Class for Font handling.
-		!#zh 字体资源类。 */
-		export class Font extends RawAsset {		
-		constructor();	
-	}		
-		/** !#en Class for prefab handling.
-		!#zh 预制资源类。 */
-		export class Prefab extends Asset {		
-		constructor();	
-	}		
-		/** !#en
-		The base class for registering asset types.
-		
-		You may want to override:
-		- createNode (static)
-		!#zh
-		注册用的资源基类。<br/>
-		你可能要重写：<br/>
-		- createNode (static) */
-		export class RawAsset extends CCObject {		
-		/** !#en
-		Create a new node in the scene.<br/>
-		If this type of asset dont have its corresponding node type, this method should be null.
-		!#zh
-		在场景中创建一个新节点。<br/>
-		如果这类资源没有相应的节点类型，该方法应该是空的。 
-		*/
-		createNodeByInfo(Info : any, callback: (error: string, node: any) => void) : void;	
-	}		
-		/** !#en Class for scene handling.
-		!#zh 场景资源类。 */
-		export class SceneAsset extends Asset {		
-		constructor();	
-	}		
-		/** !#en Class for script handling.
-		!#zh Script 资源类。 */
-		export class _Script extends Asset {		
-		constructor();	
-	}		
-		/** !#en Class for JavaScript handling.
-		!#zh JavaScript 资源类。 */
-		export class _JavaScript extends Asset {		
-		constructor();	
-	}		
-		/** !#en Class for coffee script handling.
-		!#zh CoffeeScript 资源类。 */
-		export class CoffeeScript extends Asset {		
-		constructor();	
-	}		
-		/** !#en Class for sprite atlas handling.
-		!#zh 精灵图集资源类。 */
-		export class SpriteAtlas extends RawAsset {		
-		constructor();		
-		/** Returns the texture of the sprite atlas 
-		*/
-		getTexture() : cc.Texture2D;		
-		/** Returns the sprite frame correspond to the given key in sprite atlas. 
-		*/
-		getSpriteFrame(key : string) : cc.SpriteFrame;		
-		/** Returns the sprite frames in sprite atlas. 
-		*/
-		getSpriteFrames() : [cc.SpriteFrame];	
-	}		
-		/** !#en Class for TTFFont handling.
-		!#zh TTF 字体资源类。 */
-		export class TTFFont extends Asset {		
-		constructor();	
-	}		
-		/** !#en Class for text file.
-		!#zh 文本资源类。 */
-		export class TextAsset extends Asset {		
-		constructor();	
 	}		
 		/** !#en Box Collider.
 		!#zh 包围盒碰撞组件 */
@@ -4473,8 +4413,150 @@ declare module cc {
 		!#zh 多边形顶点数组 */
 		points : [Vec2];	
 	}		
+		/** !#en
+		Base class for handling assets used in Fireball. This class can be instantiate.
+		
+		You may want to override:<br/>
+		- createNode<br/>
+		- cc.Object._serialize<br/>
+		- cc.Object._deserialize<br/>
+		!#zh
+		资源基类，该类可以被实例化。<br/>
+		
+		您可能需要重写：<br/>
+		- createNode <br/>
+		- cc.Object._serialize<br/>
+		- cc.Object._deserialize<br/> */
+		export class Asset extends RawAsset {		
+		constructor();		
+		/** !#en
+		Returns the url of this asset's first raw file, if none of rawFile exists,
+		it will returns an empty string.
+		!#zh 返回该资源的原始文件的 URL，如果不支持 RAW 文件，它将返回一个空字符串。 */
+		rawUrl : string;		
+		/** !#en
+		Returns the url of this asset's raw files, if none of rawFile exists,
+		it will returns an empty array.
+		!#zh 返回该资源的原文件的 URL 数组，如果不支持 RAW 文件，它将返回一个空数组。 */
+		rawUrls : String[];		
+		/** !#en Indicates whether its dependent raw assets can support deferred load if the owner scene is marked as `asyncLoadAssets`.
+		!#zh 当场景被标记为 `asyncLoadAssets`，禁止延迟加载该资源所依赖的其它 RawAsset。 */
+		preventDeferredLoadDependents : boolean;		
+		/** !#en
+		Create a new node using this asset in the scene.<br/>
+		If this type of asset dont have its corresponding node type, this method should be null.
+		!#zh
+		使用该资产在场景中创建一个新节点。<br/>
+		如果这类资产没有相应的节点类型，该方法应该是空的。 
+		*/
+		createNode(callback: (error: string, node: any) => void) : void;	
+	}		
+		/** !#en Class for audio data handling.
+		!#zh 音频资源类。 */
+		export class AudioClip extends RawAsset {		
+		constructor();	
+	}		
+		/** !#en Class for BitmapFont handling.
+		!#zh 位图字体资源类。 */
+		export class BitmapFont extends RawAsset {		
+		constructor();	
+	}		
+		/** !#en Class for Font handling.
+		!#zh 字体资源类。 */
+		export class Font extends RawAsset {		
+		constructor();	
+	}		
+		/** !#en Class for prefab handling.
+		!#zh 预制资源类。 */
+		export class Prefab extends Asset {		
+		constructor();	
+	}		
+		/** !#en
+		The base class for registering asset types.
+		
+		You may want to override:
+		- createNode (static)
+		!#zh
+		注册用的资源基类。<br/>
+		你可能要重写：<br/>
+		- createNode (static) */
+		export class RawAsset extends CCObject {		
+		/** !#en
+		Create a new node in the scene.<br/>
+		If this type of asset dont have its corresponding node type, this method should be null.
+		!#zh
+		在场景中创建一个新节点。<br/>
+		如果这类资源没有相应的节点类型，该方法应该是空的。 
+		*/
+		createNodeByInfo(Info : any, callback: (error: string, node: any) => void) : void;	
+	}		
+		/** !#en Class for scene handling.
+		!#zh 场景资源类。 */
+		export class SceneAsset extends Asset {		
+		constructor();		
+		scene : cc.Scene;		
+		/** !#en Indicates the raw assets of this scene can be load after scene launched.
+		!#zh 指示该场景依赖的资源可否在场景切换后再延迟加载。 */
+		asyncLoadAssets : boolean;	
+	}		
+		/** !#en Class for script handling.
+		!#zh Script 资源类。 */
+		export class _Script extends Asset {		
+		constructor();	
+	}		
+		/** !#en Class for JavaScript handling.
+		!#zh JavaScript 资源类。 */
+		export class _JavaScript extends Asset {		
+		constructor();	
+	}		
+		/** !#en Class for coffee script handling.
+		!#zh CoffeeScript 资源类。 */
+		export class CoffeeScript extends Asset {		
+		constructor();	
+	}		
+		/** !#en Class for sprite atlas handling.
+		!#zh 精灵图集资源类。 */
+		export class SpriteAtlas extends RawAsset {		
+		constructor();		
+		/** Returns the texture of the sprite atlas 
+		*/
+		getTexture() : cc.Texture2D;		
+		/** Returns the sprite frame correspond to the given key in sprite atlas. 
+		*/
+		getSpriteFrame(key : string) : SpriteFrame;		
+		/** Returns the sprite frames in sprite atlas. 
+		*/
+		getSpriteFrames() : [SpriteFrame];	
+	}		
+		/** !#en Class for TTFFont handling.
+		!#zh TTF 字体资源类。 */
+		export class TTFFont extends Asset {		
+		constructor();	
+	}		
+		/** !#en Class for text file.
+		!#zh 文本资源类。 */
+		export class TextAsset extends Asset {		
+		constructor();	
+	}		
 		/** !#en The animation component is used to play back animations.
-		!#zh Animation 组件用于播放动画。你能指定动画剪辑到动画组件并从脚本控制播放。 */
+		
+		Animation provide several events to register：
+		 - play : Emit when egine playing animation
+		 - stop : Emit when stop playing animation
+		 - pause : Emit when pause animation
+		 - resume : Emit when resume animation
+		 - lastframe : If animation repeat coutn is larger than 1, emit when animation play to the last frame
+		 - finished : Emit when finish playing animation
+		
+		!#zh Animation 组件用于播放动画。你能指定动画剪辑到动画组件并从脚本控制播放。
+		
+		Animation 提供了一系列可注册的事件：
+		 - play : 开始播放时
+		 - stop : 停止播放时
+		 - pause : 暂停播放时
+		 - resume : 恢复播放时
+		 - lastframe : 假如动画循环次数大于 1，当动画播放到最后一帧时
+		 - finished : 动画播放完成时 */
 		export class Animation extends CCComponent {		
 		/** !#en Animation will play the default clip when start game.
 		!#zh 在勾选自动播放或调用 play() 时默认播放的动画剪辑。 */
@@ -4564,7 +4646,55 @@ declare module cc {
 		This is useful when you explicitly want to set up some animation state, and sample it once.
 		!#zh 对当前动画进行采样。你可以手动将动画设置到某一个状态，然后采样一次。 
 		*/
-		sample() : void;	
+		sample() : void;		
+		/** !#en
+		Register animation event callback.
+		The event argumetns will provide the AnimationState which emit the event.
+		When play an animation, will auto register the event callback to the AnimationState, and unregister the event callback from the AnimationState when animation stopped.
+		!#zh
+		注册动画事件回调。
+		回调的事件里将会附上发送事件的 AnimationState。
+		当播放一个动画时，会自动将事件注册到对应的 AnimationState 上，停止播放时会将事件从这个 AnimationState 上取消注册。
+		@param type A string representing the event type to listen for.
+		@param callback The callback that will be invoked when the event is dispatched.
+		                             The callback is ignored if it is a duplicate (the callbacks are unique).
+		@param target The target to invoke the callback, can be null
+		@param useCapture When set to true, the capture argument prevents callback
+		                             from being invoked when the event's eventPhase attribute value is BUBBLING_PHASE.
+		                             When false, callback will NOT be invoked when event's eventPhase attribute value is CAPTURING_PHASE.
+		                             Either way, callback will be invoked when event's eventPhase attribute value is AT_TARGET.
+		
+		@example 
+		```js
+		onPlay: function (event) {
+		    var state = event.detail;    // state instanceof cc.AnimationState
+		    var type = event.type;       // type === 'play';
+		}
+		
+		// register event to all animation
+		animation.on('', 'play',      this.onPlay,        this);
+		``` 
+		*/
+		on(type : string, callback: (param: Event) => void, target : any, useCapture : boolean) : void;		
+		/** !#en
+		Unregister animation event callback.
+		!#zh
+		取消注册动画事件回调。
+		@param type A string representing the event type being removed.
+		@param callback The callback to remove.
+		@param target The target to invoke the callback, if it's not given, only callback without target will be removed
+		@param useCapture Specifies whether the callback being removed was registered as a capturing callback or not.
+		                             If not specified, useCapture defaults to false. If a callback was registered twice,
+		                             one with capture and one without, each must be removed separately. Removal of a capturing callback
+		                             does not affect a non-capturing version of the same listener, and vice versa.
+		
+		@example 
+		```js
+		// unregister event to all animation
+		animation.off('', 'play',      this.onPlay,        this);
+		``` 
+		*/
+		off(type : string, callback : Function, target : any, useCapture : boolean) : void;	
 	}		
 		/** !#en Audio Source.
 		!#zh 音频源组件，能对音频剪辑。 */
@@ -4755,8 +4885,8 @@ declare module cc {
 		!#zh 当附加到一个激活的节点上或者其节点第一次激活时候调用。 
 		*/
 		onLoad() : void;		
-		/** !#en Called before all scripts' update if the Component is enabled.
-		!#zh 如果该组件启用，则在所有组件的 update 之前调用。 
+		/** !#en Called before all scripts' update if the Component is enabled the first time.
+		!#zh 如果该组件第一次启用，则在所有组件的 update 之前调用。 
 		*/
 		start() : void;		
 		/** !#en Called when this component becomes enabled and its node is active.
@@ -4820,8 +4950,8 @@ declare module cc {
 		``` 
 		*/
 		getComponentInChildren(typeOrClassName : Function|string) : Component;		
-		/** !#en Returns the components of supplied type in any of its children using depth first search.
-		!#zh 递归查找所有子节点中指定类型的组件。
+		/** !#en Returns the components of supplied type in self or any of its children using depth first search.
+		!#zh 递归查找自身或所有子节点中指定类型的组件
 		
 		@example 
 		```js
@@ -4989,7 +5119,10 @@ declare module cc {
 		textChanged : Component.EventHandler;		
 		/** !#en The event handler to be called when EditBox edit ends.
 		!#zh 结束编辑文本输入框时触发的事件回调。 */
-		editingDidEnded : Component.EventHandler;	
+		editingDidEnded : Component.EventHandler;		
+		/** !#en The event handler to be called when return key is pressed. Windows is not supported.
+		!#zh 当用户按下回车按键时的事件回调，目前不支持 windows 平台 */
+		editingReturn : Component.EventHandler;	
 	}		
 		/** !#en The Label Component.
 		!#zh 文字标签组件 */
@@ -5174,6 +5307,11 @@ declare module cc {
 		/** !#en Scrollview events callback
 		!#zh 滚动视图的事件回调函数 */
 		scrollEvents : Component.EventHandler[];		
+		/** !#en If cancelInnerEvents is set to true, the scroll behavior will cancel touch events on inner content nodes of the scroll view
+		It's set to true by default.
+		!#zh 如果这个属性被设置为 true，那么滚动行为会取消 ScrollView 的子节点上注册的触摸事件，默认被设置为 true。
+		注意，子节点上的 touchstart 事件仍然会触发，触点移动距离非常短的情况下 touchmove 和 touchend 也不会受影响。 */
+		cancelInnerEvents : boolean;		
 		/** !#en Scroll the content to the bottom boundary of ScrollView.
 		!#zh 视图内容将在规定时间内滚动到视图底部。
 		@param timeInSecond Scroll time in second, if you don't pass timeInSecond,
@@ -5343,6 +5481,10 @@ declare module cc {
 		scrollView.scrollToPercentVertical(0.5, 0.1); 
 		*/
 		scrollToPercentVertical(percent : number, timeInSecond? : number, attenuated? : boolean) : void;		
+		/** !#en  Stop auto scroll immediately
+		!#zh  停止自动滚动, 调用此 API 可以让 Scrollview 立即停止滚动 
+		*/
+		stopAutoScroll() : void;		
 		/** !#en Modify the content position.
 		!#zh 设置当前视图内容的坐标点。
 		@param position The position in content's parent space. 
@@ -5394,25 +5536,6 @@ declare module cc {
 		/** !#en specify the size tracing mode.
 		!#zh 精灵尺寸调整模式 */
 		sizeMode : Sprite.SizeMode;		
-		/** !#en Sets whether the sprite is visible or not.
-		!#zh 设置精灵是否可见
-		
-		@example 
-		```js
-		sprite.setVisible(false);
-		``` 
-		*/
-		setVisible(visible : boolean) : void;		
-		/** !#en Query the sprite's original size.
-		!#zh 获取精灵原始大小
-		
-		@example 
-		```js
-		var originalSize = sprite.getOriginalSize();
-		cc.log("Original Size:" + originalSize);
-		``` 
-		*/
-		getOriginalSize() : Size;		
 		/** !#en Change the left sprite's cap inset.
 		!#zh 设置精灵左边框-用于九宫格。
 		@param insetLeft The values to use for the cap inset.
@@ -5516,9 +5639,9 @@ declare module cc {
 		/** !#en The local video full path.
 		!#zh 本地视频的 URL */
 		video : string;		
-		/** !#en The current time when video start to play.
-		!#zh  从当前时间点开始播放视频 */
-		currentTime : Float;		
+		/** !#en The current playback time of the now playing item in seconds, you could also change the start playback time.
+		!#zh 指定视频从什么时间点开始播放，单位是秒，也可以用来获取当前视频播放的时间进度。 */
+		currentTime : number;		
 		/** !#en Whether keep the aspect ration of the original video.
 		!#zh 是否保持视频原来的宽高比 */
 		keepAspectRatio : boolean;		
@@ -5545,11 +5668,23 @@ declare module cc {
 		*/
 		stop() : void;	
 	}		
+		/** !#en cc.WebView is a component for display web pages in the game
+		!#zh WebView 组件，用于在游戏中显示网页 */
+		export class WebView extends _RendererUnderSG {		
+		/** !#en A given URL to be loaded by the WebView, it should have a http or https prefix.
+		!#zh 指定 WebView 加载的网址，它应该是一个 http 或者 https 开头的字符串 */
+		url : string;		
+		/** !#en The webview's event callback , it will be triggered when certain webview event occurs.
+		!#zh WebView 的回调事件，当网页加载过程中，加载完成后或者加载出错时都会回调此函数 */
+		webviewLoadedEvents : cc.Component.EventHandler[];	
+	}		
 		/** !#en
 		Stores and manipulate the anchoring based on its parent.
 		Widget are used for GUI but can also be used for other things.
+		Widget will adjust current node's position and size automatically, but the results after adjustment can not be obtained until the next frame.
 		!#zh
-		Widget 组件，用于设置和适配其相对于父节点的边距，Widget 通常被用于 UI 界面，也可以用于其他地方。 */
+		Widget 组件，用于设置和适配其相对于父节点的边距，Widget 通常被用于 UI 界面，也可以用于其他地方。
+		Widget 会自动调整当前节点的坐标和宽高，不过目前调整后的结果要到下一帧才能在脚本里获取到。 */
 		export class Widget extends Component {		
 		/** !#en Whether to align the top.
 		!#zh 是否对齐上边。 */
@@ -5609,6 +5744,22 @@ declare module cc {
 		!#zh
 		本节点右边和父节点右边的距离，可填写负值，只有在 isAlignRight 开启时才有作用。 */
 		right : number;		
+		/** !#en
+		Horizontal aligns the midpoint offset value,
+		the value can be negative, Only available in 'isAlignHorizontalCenter' open.
+		!#zh 水平居中的偏移值，可填写负值，只有在 isAlignHorizontalCenter 开启时才有作用。 */
+		horizontalCenter : number;		
+		/** !#en
+		Vertical aligns the midpoint offset value,
+		the value can be negative, Only available in 'isAlignVerticalCenter' open.
+		!#zh 垂直居中的偏移值，可填写负值，只有在 isAlignVerticalCenter 开启时才有作用。 */
+		verticalCenter : number;		
+		/** !#en If true, horizontalCenter is pixel margin, otherwise is percentage (0 - 1) margin.
+		!#zh 如果为 true，"horizontalCenter" 将会以像素作为偏移值，反之为百分比（0 到 1）。 */
+		isAbsoluteHorizontalCenter : boolean;		
+		/** !#en If true, verticalCenter is pixel margin, otherwise is percentage (0 - 1) margin.
+		!#zh 如果为 true，"verticalCenter" 将会以像素作为偏移值，反之为百分比（0 到 1）。 */
+		isAbsoluteVerticalCenter : boolean;		
 		/** !#en
 		If true, top is pixel margin, otherwise is percentage (0 - 1) margin relative to the parent's height.
 		!#zh
@@ -5851,7 +6002,7 @@ declare module cc {
 		export class EventListener {		
 		/** Constructor 
 		*/
-		EventListener(type : number, listenerID : number, callback : number) : EventListner;		
+		EventListener(type : number, listenerID : number, callback : number) : EventListener;		
 		/** !#en Checks whether the listener is available.
 		!#zh 检测监听器是否有效 
 		*/
@@ -6058,6 +6209,135 @@ declare module cc {
 		*/
 		setTouchInfo(id : number, x : number, y : number) : void;	
 	}		
+		/** undefined */
+		export class Graphics extends _RendererUnderSG {		
+		/** !#en
+		Current line width.
+		!#zh
+		当前线条宽度 */
+		lineWidth : number;		
+		/** !#en
+		lineJoin determines how two connecting segments (of lines, arcs or curves) with non-zero lengths in a shape are joined together.
+		!#zh
+		lineJoin 用来设置2个长度不为0的相连部分（线段，圆弧，曲线）如何连接在一起的属性。 */
+		lineJoin : Graphics.LineJoin;		
+		/** !#en
+		lineCap determines how the end points of every line are drawn.
+		!#zh
+		lineCap 指定如何绘制每一条线段末端。 */
+		lineCap : Graphics.LineCap;		
+		/** !#en
+		stroke color
+		!#zh
+		线段颜色 */
+		strokeColor : Color;		
+		/** !#en
+		fill color
+		!#zh
+		填充颜色 */
+		fillColor : Color;		
+		/** !#en
+		Sets the miter limit ratio
+		!#zh
+		设置斜接面限制比例 */
+		miterLimit : number;		
+		/** !#en Move path start point to (x,y).
+		!#zh 移动路径起点到坐标(x, y)
+		@param x The x axis of the coordinate for the end point.
+		@param y The y axis of the coordinate for the end point. 
+		*/
+		moveTo(x? : number, y? : number) : void;		
+		/** !#en Adds a straight line to the path
+		!#zh 绘制直线路径
+		@param x The x axis of the coordinate for the end point.
+		@param y The y axis of the coordinate for the end point. 
+		*/
+		lineTo(x? : number, y? : number) : void;		
+		/** !#en Adds a cubic Bézier curve to the path
+		!#zh 绘制三次贝赛尔曲线路径
+		@param c1x The x axis of the coordinate for the first control point.
+		@param c1y The y axis of the coordinate for first control point.
+		@param c2x The x axis of the coordinate for the second control point.
+		@param c2y The y axis of the coordinate for the second control point.
+		@param x The x axis of the coordinate for the end point.
+		@param y The y axis of the coordinate for the end point. 
+		*/
+		bezierCurveTo(c1x? : number, c1y? : number, c2x? : number, c2y? : number, x? : number, y? : number) : void;		
+		/** !#en Adds a quadratic Bézier curve to the path
+		!#zh 绘制二次贝赛尔曲线路径
+		@param cx The x axis of the coordinate for the control point.
+		@param cy The y axis of the coordinate for the control point.
+		@param x The x axis of the coordinate for the end point.
+		@param y The y axis of the coordinate for the end point. 
+		*/
+		quadraticCurveTo(cx? : number, cy? : number, x? : number, y? : number) : void;		
+		/** !#en Adds an arc to the path which is centered at (cx, cy) position with radius r starting at startAngle and ending at endAngle going in the given direction by counterclockwise (defaulting to false).
+		!#zh 绘制圆弧路径。圆弧路径的圆心在 (cx, cy) 位置，半径为 r ，根据 counterclockwise （默认为false）指定的方向从 startAngle 开始绘制，到 endAngle 结束。
+		@param cx The x axis of the coordinate for the center point.
+		@param cy The y axis of the coordinate for the center point.
+		@param r The arc's radius.
+		@param startAngle The angle at which the arc starts, measured clockwise from the positive x axis and expressed in radians.
+		@param endAngle The angle at which the arc ends, measured clockwise from the positive x axis and expressed in radians.
+		@param counterclockwise An optional Boolean which, if true, causes the arc to be drawn counter-clockwise between the two angles. By default it is drawn clockwise. 
+		*/
+		arc(cx? : number, cy? : number, r? : number, startAngle? : number, endAngle? : number, counterclockwise? : number) : void;		
+		/** !#en Adds an ellipse to the path.
+		!#zh 绘制椭圆路径。
+		@param cx The x axis of the coordinate for the center point.
+		@param cy The y axis of the coordinate for the center point.
+		@param rx The ellipse's x-axis radius.
+		@param ry The ellipse's y-axis radius. 
+		*/
+		ellipse(cx? : number, cy? : number, rx? : number, ry? : number) : void;		
+		/** !#en Adds an circle to the path.
+		!#zh 绘制圆形路径。
+		@param cx The x axis of the coordinate for the center point.
+		@param cy The y axis of the coordinate for the center point.
+		@param r The circle's radius. 
+		*/
+		circle(cx? : number, cy? : number, r? : number) : void;		
+		/** !#en Adds an rectangle to the path.
+		!#zh 绘制矩形路径。
+		@param x The x axis of the coordinate for the rectangle starting point.
+		@param y The y axis of the coordinate for the rectangle starting point.
+		@param w The rectangle's width.
+		@param h The rectangle's height. 
+		*/
+		rect(x? : number, y? : number, w? : number, h? : number) : void;		
+		/** !#en Adds an round corner rectangle to the path.
+		!#zh 绘制圆角矩形路径。
+		@param x The x axis of the coordinate for the rectangle starting point.
+		@param y The y axis of the coordinate for the rectangle starting point.
+		@param w The rectangles width.
+		@param h The rectangle's height.
+		@param r The radius of the rectangle. 
+		*/
+		roundRect(x? : number, y? : number, w? : number, h? : number, r? : number) : void;		
+		/** !#en Draws a filled rectangle.
+		!#zh 绘制填充矩形。
+		@param x The x axis of the coordinate for the rectangle starting point.
+		@param y The y axis of the coordinate for the rectangle starting point.
+		@param w The rectangle's width.
+		@param h The rectangle's height. 
+		*/
+		fillRect(x? : number, y? : number, w? : number, h? : number) : void;		
+		/** !#en Erasing any previously drawn content.
+		!#zh 擦除之前绘制的所有内容的方法。 
+		*/
+		clear() : void;		
+		/** !#en Causes the point of the pen to move back to the start of the current path. It tries to add a straight line from the current point to the start.
+		!#zh 将笔点返回到当前路径起始点的。它尝试从当前点到起始点绘制一条直线。 
+		*/
+		close() : void;		
+		/** !#en Strokes the current or given path with the current stroke style.
+		!#zh 根据当前的画线样式，绘制当前或已经存在的路径。 
+		*/
+		stroke() : void;		
+		/** !#en Fills the current or given path with the current fill style.
+		!#zh 根据当前的画线样式，填充当前或已经存在的路径。 
+		*/
+		stroke() : void;	
+	}		
 		/** Loader for resource loading process. It's a singleton object. */
 		export class loader extends Pipeline {		
 		/** The downloader in cc.loader's pipeline, it's by default the first pipe.
@@ -6196,7 +6476,7 @@ declare module cc {
 		getRes(url : string) : any;		
 		/** Returns an item in pipeline. 
 		*/
-		getItem() : LoadingItem;		
+		getItem() : any;		
 		/** Release the cache of resource by url. 
 		*/
 		release(url : string) : void;		
@@ -6208,7 +6488,79 @@ declare module cc {
 		releaseRes(url : string) : void;		
 		/** Resource cache of all resources. 
 		*/
-		releaseAll() : void;	
+		releaseAll() : void;		
+		/** !#en
+		Indicates whether to release the asset when loading a new scene.<br>
+		By default, when loading a new scene, all assets in the previous scene will be released or preserved
+		according to whether the previous scene checked the "Auto Release Assets" option.
+		On the other hand, assets dynamically loaded by using `cc.loader.loadRes` or `cc.loader.loadResAll`
+		will not be affected by that option, remain not released by default.<br>
+		Use this API to change the default behavior on a single asset, to force preserve or release specified asset when scene switching.<br>
+		<br>
+		See: {{#crossLink "loader/setAutoReleaseRecursively:method"}}cc.loader.setAutoReleaseRecursively{{/crossLink}}, {{#crossLink "loader/isAutoRelease:method"}}cc.loader.isAutoRelease{{/crossLink}}
+		!#zh
+		设置当场景切换时是否自动释放资源。<br>
+		默认情况下，当加载新场景时，旧场景的资源根据旧场景是否勾选“Auto Release Assets”，将会被释放或者保留。
+		而使用 `cc.loader.loadRes` 或 `cc.loader.loadResAll` 动态加载的资源，则不受场景设置的影响，默认不自动释放。<br>
+		使用这个 API 可以在单个资源上改变这个默认行为，强制在切换场景时保留或者释放指定资源。<br>
+		<br>
+		参考：{{#crossLink "loader/setAutoReleaseRecursively:method"}}cc.loader.setAutoReleaseRecursively{{/crossLink}}，{{#crossLink "loader/isAutoRelease:method"}}cc.loader.isAutoRelease{{/crossLink}}
+		@param assetOrUrl asset object or the raw asset's url
+		@param autoRelease indicates whether should release automatically
+		
+		@example 
+		```js
+		// auto release the texture event if "Auto Release Assets" disabled in current scene
+		cc.loader.setAutoRelease(texture2d, true);
+		// don't release the texture even if "Auto Release Assets" enabled in current scene
+		cc.loader.setAutoRelease(texture2d, false);
+		// first parameter can be url
+		cc.loader.setAutoRelease(audioUrl, false);
+		``` 
+		*/
+		setAutoRelease(assetOrUrl : Asset|string, autoRelease : boolean) : void;		
+		/** !#en
+		Indicates whether to release the asset and its referenced other assets when loading a new scene.<br>
+		By default, when loading a new scene, all assets in the previous scene will be released or preserved
+		according to whether the previous scene checked the "Auto Release Assets" option.
+		On the other hand, assets dynamically loaded by using `cc.loader.loadRes` or `cc.loader.loadResAll`
+		will not be affected by that option, remain not released by default.<br>
+		Use this API to change the default behavior on the specified asset and its recursively referenced assets, to force preserve or release specified asset when scene switching.<br>
+		<br>
+		See: {{#crossLink "loader/setAutoRelease:method"}}cc.loader.setAutoRelease{{/crossLink}}, {{#crossLink "loader/isAutoRelease:method"}}cc.loader.isAutoRelease{{/crossLink}}
+		!#zh
+		设置当场景切换时是否自动释放资源及资源引用的其它资源。<br>
+		默认情况下，当加载新场景时，旧场景的资源根据旧场景是否勾选“Auto Release Assets”，将会被释放或者保留。
+		而使用 `cc.loader.loadRes` 或 `cc.loader.loadResAll` 动态加载的资源，则不受场景设置的影响，默认不自动释放。<br>
+		使用这个 API 可以在指定资源及资源递归引用到的所有资源上改变这个默认行为，强制在切换场景时保留或者释放指定资源。<br>
+		<br>
+		参考：{{#crossLink "loader/setAutoRelease:method"}}cc.loader.setAutoRelease{{/crossLink}}，{{#crossLink "loader/isAutoRelease:method"}}cc.loader.isAutoRelease{{/crossLink}}
+		@param assetOrUrl asset object or the raw asset's url
+		@param autoRelease indicates whether should release automatically
+		
+		@example 
+		```js
+		// auto release the SpriteFrame and its Texture event if "Auto Release Assets" disabled in current scene
+		cc.loader.setAutoReleaseRecursively(spriteFrame, true);
+		// don't release the SpriteFrame and its Texture even if "Auto Release Assets" enabled in current scene
+		cc.loader.setAutoReleaseRecursively(spriteFrame, false);
+		// don't release the Prefab and all the referenced assets
+		cc.loader.setAutoReleaseRecursively(prefab, false);
+		``` 
+		*/
+		setAutoReleaseRecursively(assetOrUrl : Asset|string, autoRelease : boolean) : void;		
+		/** !#en
+		Returns whether the asset is configured as auto released, despite how "Auto Release Assets" property is set on scene asset.<br>
+		<br>
+		See: {{#crossLink "loader/setAutoRelease:method"}}cc.loader.setAutoRelease{{/crossLink}}, {{#crossLink "loader/setAutoReleaseRecursively:method"}}cc.loader.setAutoReleaseRecursively{{/crossLink}}
+		
+		!#zh
+		返回指定的资源是否有被设置为自动释放，不论场景的“Auto Release Assets”如何设置。<br>
+		<br>
+		参考：{{#crossLink "loader/setAutoRelease:method"}}cc.loader.setAutoRelease{{/crossLink}}，{{#crossLink "loader/setAutoReleaseRecursively:method"}}cc.loader.setAutoReleaseRecursively{{/crossLink}}
+		@param assetOrUrl asset object or the raw asset's url 
+		*/
+		isAutoRelease(assetOrUrl : Asset|string) : boolean;	
 	}		
 		/** !#en
 		LoadingItems is the manager of items in pipeline.</br>
@@ -6473,128 +6825,6 @@ declare module cc {
 		*/
 		onComplete(error : any[], items : LoadingItems) : void;	
 	}		
-		/** !#en
-		A cc.SpriteFrame has:<br/>
-		 - texture: A cc.Texture2D that will be used by the _ccsg.Sprite<br/>
-		 - rectangle: A rectangle of the texture<br/>
-		<br/>
-		You can modify the frame of a _ccsg.Sprite by doing:<br/>
-		
-		Note: It's not recommended to use SpriteFrame constructor (new SpriteFrame)
-		to create SpriteFrame instance since it's memory will be unable to manage. <br/>
-		Instead please use cc.loader.loadRes to get SpriteFrame instance from loading,
-		or define a cc.SpriteFrame property in your component and drag the SpriteFrame onto it.
-		
-		!#zh
-		一个 SpriteFrame 包含：<br/>
-		 - 纹理：会被 Sprite 使用的 Texture2D 对象。<br/>
-		 - 矩形：在纹理中的矩形区域。<br/>
-		注意：目前只建议通过以下几个方式进行创建 SpriteFrame：<br/>
-		 - 可以在你的组件上定义一个 SpriteFrame 类型并通过拖动 SpriteFrame 资源进行赋值。<br/>
-		 - 通过 cc.loader.loadRes 或 atlas.getSpriteFrame 来获得 spriteFrame 实例。 */
-		export class SpriteFrame extends Asset {		
-		constructor();		
-		/** !#en
-		Constructor of SpriteFrame class. <br/>
-		Node: It's not recommended to use SpriteFrame constructor (new SpriteFrame), <br/>
-		Because the instance in the native environment requires the user to manually manage memory, <br/>
-		or you might cause serious errors.
-		!#zh
-		SpriteFrame 类的构造函数。<br/>
-		注意：不建议用户使用构造函数进行创建，因为该实例在原生环境下需要用户手动管理内存，不然会导致严重错误。
-		@param rotated Whether the frame is rotated in the texture
-		@param offset The offset of the frame in the texture
-		@param originalSize The size of the frame in the texture 
-		*/
-		SpriteFrame(filename? : string|Texture2D, rect? : Rect, rotated? : boolean, offset? : Vec2, originalSize? : Size) : void;		
-		/** !#en Top border of the sprite
-		!#zh sprite 的顶部边框 */
-		insetTop : number;		
-		/** !#en Bottom border of the sprite
-		!#zh sprite 的底部边框 */
-		insetBottom : number;		
-		/** !#en Left border of the sprite
-		!#zh sprite 的左边边框 */
-		insetLeft : number;		
-		/** !#en Right border of the sprite
-		!#zh sprite 的左边边框 */
-		insetRight : number;		
-		/** !#en Returns whether the texture have been loaded
-		!#zh 返回是否已加载纹理 
-		*/
-		textureLoaded() : boolean;		
-		/** Add a event listener for texture loaded event. 
-		*/
-		addLoadedEventListener(callback : Function, target : any) : void;		
-		/** !#en Returns whether the sprite frame is rotated in the texture.
-		!#zh 获取 SpriteFrame 是否旋转 
-		*/
-		isRotated() : boolean;		
-		/** !#en Set whether the sprite frame is rotated in the texture.
-		!#zh 设置 SpriteFrame 是否旋转 
-		*/
-		setRotated(bRotated : boolean) : void;		
-		/** !#en Returns the rect of the sprite frame in the texture.
-		!#zh 获取 SpriteFrame 的纹理矩形区域 
-		*/
-		getRect() : Rect;		
-		/** !#en Sets the rect of the sprite frame in the texture.
-		!#zh 设置 SpriteFrame 的纹理矩形区域 
-		*/
-		setRect(rect : Rect) : void;		
-		/** !#en Returns the original size of the trimmed image.
-		!#zh 获取修剪前的原始大小 
-		*/
-		getOriginalSize() : Size;		
-		/** !#en Sets the original size of the trimmed image.
-		!#zh 设置修剪前的原始大小 
-		*/
-		setOriginalSize(size : Size) : void;		
-		/** !#en Returns the texture of the frame.
-		!#zh 获取使用的纹理实例 
-		*/
-		getTexture() : Texture2D;		
-		/** !#en Sets the texture of the frame, the texture is retained automatically.
-		!#zh 设置使用的纹理实例，会被 retain。 
-		*/
-		_refreshTexture(texture : Texture2D) : void;		
-		/** !#en Returns the offset of the frame in the texture.
-		!#zh 获取偏移量 
-		*/
-		getOffset() : Vec2;		
-		/** !#en Sets the offset of the frame in the texture.
-		!#zh 设置偏移量 
-		*/
-		setOffset(offsets : Vec2) : void;		
-		/** !#en Clone the sprite frame.
-		!#zh 克隆 SpriteFrame 
-		*/
-		clone() : SpriteFrame;	
-	}		
-		/** undefined */
-		export class _ComponentAttributes {		
-		constructor();		
-		/** Automatically add required component as a dependency. */
-		requireComponent : Component;		
-		/** If specified to a type, prevents Component of the same type (or subtype) to be added more than once to a Node. */
-		disallowMultiple : Component;		
-		/** The menu path to register a component to the editors "Component" menu. Eg. "Rendering/Camera". */
-		menu : string;		
-		/** Makes a component execute in edit mode.
-		By default, all components are only executed in play mode,
-		which means they will not have their callback functions executed while the Editor is in edit mode. */
-		executeInEditMode : boolean;		
-		/** This property is only available if executeInEditMode is true.
-		If specified, the editor's scene view will keep updating this node in 60 fps when it is selected,
-		otherwise, it will update only if necessary. */
-		playOnFocus : boolean;		
-		/** Specifying the url of the custom html to draw the component in inspector. */
-		inspector : string;		
-		/** Specifying the url of the icon to display in inspector. */
-		icon : string;		
-		/** The custom documentation URL */
-		help : string;	
-	}		
 		/** <p>
 		 This class manages all events of input. include: touch, mouse, accelerometer, keyboard                                       <br/>
 		</p> */
@@ -6816,8 +7046,11 @@ declare module cc {
 		UNIFORM_SAMPLER = 0,
 		UNIFORM_MAX = 0,
 		SHADER_POSITION_TEXTURECOLOR = 0,
+		SHADER_SPRITE_POSITION_TEXTURECOLOR = 0,
 		SHADER_POSITION_TEXTURECOLORALPHATEST = 0,
+		SHADER_SPRITE_POSITION_TEXTURECOLORALPHATEST = 0,
 		SHADER_POSITION_COLOR = 0,
+		SHADER_SPRITE_POSITION_COLOR = 0,
 		SHADER_POSITION_TEXTURE = 0,
 		SHADER_POSITION_TEXTURE_UCOLOR = 0,
 		SHADER_POSITION_TEXTUREA8COLOR = 0,
@@ -6878,14 +7111,14 @@ declare module cc {
 		isValid : boolean;		
 		/** !#en
 		Destroy this Object, and release all its own references to other objects.<br/>
+		Actual object destruction will delayed until before rendering.
 		<br/>
-		After destroy, this CCObject is not usable any more.<br/>
-		You can use cc.isValid(obj) (or obj.isValid if obj is non-nil) to check whether the object is destroyed before
-		accessing it.
+		After destroy, this CCObject is not usable any more.
+		You can use cc.isValid(obj) to check whether the object is destroyed before accessing it.
 		!#zh
 		销毁该对象，并释放所有它对其它对象的引用。<br/>
-		销毁后，CCObject 不再可用。<br/>
-		您可以在访问对象之前使用 cc.isValid(obj)（或 obj.isValid 如果 obj 不为 null）来检查对象是否已被销毁。
+		销毁后，CCObject 不再可用。您可以在访问对象之前使用 cc.isValid(obj) 来检查对象是否已被销毁。
+		实际销毁操作会延迟到当前帧渲染前执行。
 		
 		@example 
 		```js
@@ -6972,7 +7205,7 @@ declare module cc {
 		LINUX : number;		
 		MACOS : number;		
 		ANDROID : number;		
-		IOS : number;		
+		IPHONE : number;		
 		IPAD : number;		
 		BLACKBERRY : number;		
 		NACL : number;		
@@ -7019,6 +7252,10 @@ declare module cc {
 		language : string;		
 		/** Indicate the running os name */
 		os : string;		
+		/** Indicate the running os version */
+		osVersion : string;		
+		/** Indicate the running os main version */
+		osMainVersion : number;		
 		/** Indicate the running browser type */
 		browserType : string;		
 		/** Indicate the running browser version */
@@ -7414,9 +7651,6 @@ declare module cc {
 		getUuidOf(obj : any, propName : string) : string;		
 		/**  
 		*/
-		assignAssetsBy(getter : Function) : boolean;		
-		/**  
-		*/
 		push(obj : any, propName : string, uuid : string) : void;	
 	}		
 		/** undefined */
@@ -7443,6 +7677,127 @@ declare module cc {
 		``` 
 		*/
 		builtinRaw(url : string) : string;	
+	}		
+		/** !#en
+		A cc.SpriteFrame has:<br/>
+		 - texture: A cc.Texture2D that will be used by the _ccsg.Sprite<br/>
+		 - rectangle: A rectangle of the texture<br/>
+		<br/>
+		You can modify the frame of a _ccsg.Sprite by doing:<br/>
+		
+		Note: It's not recommended to use SpriteFrame constructor (new SpriteFrame)
+		because its memory usage can't be tracked in native environment, <br/>
+		if you know what you are doing, you may need to manually retain it after creation then
+		release it when you no longer need it.
+		
+		!#zh
+		一个 SpriteFrame 包含：<br/>
+		 - 纹理：会被 Sprite 使用的 Texture2D 对象。<br/>
+		 - 矩形：在纹理中的矩形区域。<br/>
+		注意：<br/>
+		  不建议用户使用构造函数进行创建，因为其内存使用情况，不能在本地环境中进行跟踪，需要用户手动管理内存，不然会导致严重错误。<br/>
+		  如果你知道你在做什么，你可能需要手动将其保留在创建之后，然后释放它。 */
+		export class SpriteFrame extends Asset {		
+		constructor();		
+		/** !#en
+		Constructor of SpriteFrame class. <br/>
+		Note: It's not recommended to use SpriteFrame constructor (new SpriteFrame)
+		because its memory usage can't be tracked in native environment, <br/>
+		if you know what you are doing, you may need to manually retain it after creation then
+		release it when you no longer need it.
+		!#zh
+		SpriteFrame 类的构造函数。<br/>
+		注意：<br/>
+		   不建议用户使用构造函数进行创建，因为其内存使用情况，不能在本地环境中进行跟踪，
+		   需要用户手动管理内存，不然会导致严重错误。<br/>
+		   如果你知道你在做什么，你可能需要手动将其保留在创建之后，然后释放它。
+		@param rotated Whether the frame is rotated in the texture
+		@param offset The offset of the frame in the texture
+		@param originalSize The size of the frame in the texture 
+		*/
+		SpriteFrame(filename? : string|Texture2D, rect? : Rect, rotated? : boolean, offset? : Vec2, originalSize? : Size) : void;		
+		/** !#en Top border of the sprite
+		!#zh sprite 的顶部边框 */
+		insetTop : number;		
+		/** !#en Bottom border of the sprite
+		!#zh sprite 的底部边框 */
+		insetBottom : number;		
+		/** !#en Left border of the sprite
+		!#zh sprite 的左边边框 */
+		insetLeft : number;		
+		/** !#en Right border of the sprite
+		!#zh sprite 的左边边框 */
+		insetRight : number;		
+		/** !#en Returns whether the texture have been loaded
+		!#zh 返回是否已加载纹理 
+		*/
+		textureLoaded() : boolean;		
+		/** Add a event listener for texture loaded event. 
+		*/
+		addLoadedEventListener(callback : Function, target : any) : void;		
+		/** !#en Returns whether the sprite frame is rotated in the texture.
+		!#zh 获取 SpriteFrame 是否旋转 
+		*/
+		isRotated() : boolean;		
+		/** !#en Set whether the sprite frame is rotated in the texture.
+		!#zh 设置 SpriteFrame 是否旋转 
+		*/
+		setRotated(bRotated : boolean) : void;		
+		/** !#en Returns the rect of the sprite frame in the texture.
+		!#zh 获取 SpriteFrame 的纹理矩形区域 
+		*/
+		getRect() : Rect;		
+		/** !#en Sets the rect of the sprite frame in the texture.
+		!#zh 设置 SpriteFrame 的纹理矩形区域 
+		*/
+		setRect(rect : Rect) : void;		
+		/** !#en Returns the original size of the trimmed image.
+		!#zh 获取修剪前的原始大小 
+		*/
+		getOriginalSize() : Size;		
+		/** !#en Sets the original size of the trimmed image.
+		!#zh 设置修剪前的原始大小 
+		*/
+		setOriginalSize(size : Size) : void;		
+		/** !#en Returns the texture of the frame.
+		!#zh 获取使用的纹理实例 
+		*/
+		getTexture() : Texture2D;		
+		/** !#en Sets the texture of the frame, the texture is retained automatically.
+		!#zh 设置使用的纹理实例，会被 retain。 
+		*/
+		_refreshTexture(texture : Texture2D) : void;		
+		/** !#en Returns the offset of the frame in the texture.
+		!#zh 获取偏移量 
+		*/
+		getOffset() : Vec2;		
+		/** !#en Sets the offset of the frame in the texture.
+		!#zh 设置偏移量 
+		*/
+		setOffset(offsets : Vec2) : void;		
+		/** !#en Clone the sprite frame.
+		!#zh 克隆 SpriteFrame 
+		*/
+		clone() : SpriteFrame;		
+		/** !#en If a loading scene is marked as `asyncLoadAssets`, all the textures of the SpriteFrame which
+		associated by user's custom Components in the scene, will not preload automatically.
+		These textures will be load when Sprite component is going to render the SpriteFrames.
+		You can call this method if you want to load the texture early.
+		!#zh 当加载中的场景被标记为 `asyncLoadAssets` 时，用户在场景中由自定义组件关联到的所有 SpriteFrame 的贴图都不会被提前加载。
+		只有当 Sprite 组件要渲染这些 SpriteFrame 时，才会检查贴图是否加载。如果你希望加载过程提前，你可以手工调用这个方法。
+		
+		@example 
+		```js
+		if (spriteFrame.textureLoaded()) {
+		    this._onSpriteFrameLoaded();
+		}
+		else {
+		    spriteFrame.once('load', this._onSpriteFrameLoaded, this);
+		    spriteFrame.ensureLoadTexture();
+		}
+		``` 
+		*/
+		ensureLoadTexture() : void;	
 	}		
 		/** <p>
 		This class allows to easily create OpenGL or Canvas 2D textures from images, text or raw data.                                    <br/>
@@ -7697,16 +8052,6 @@ declare module cc {
 		
 		@example 
 		```js
-		---------
-		var key = cc.textureCache.getKeyByTexture(texture);
-		
-		``` 
-		*/
-		getKeyByTexture(texture : Image) : string;		
-		/** 
-		
-		@example 
-		```js
 		---------------
 		var cacheTextureForColor = cc.textureCache.getTextureColors(texture);
 		
@@ -7865,48 +8210,6 @@ declare module cc {
 		*/
 		attr(attrs : any) : void;		
 		/** !#en
-		Defines the oder in which the nodes are renderer.
-		Nodes that have a Global Z Order lower, are renderer first.
-		<br/>
-		In case two or more nodes have the same Global Z Order, the oder is not guaranteed.
-		The only exception if the Nodes have a Global Z Order == 0. In that case, the Scene Graph order is used.
-		<br/>
-		By default, all nodes have a Global Z Order = 0. That means that by default, the Scene Graph order is used to render the nodes.
-		<br/>
-		Global Z Order is useful when you need to render nodes in an order different than the Scene Graph order.
-		<br/>
-		Limitations: Global Z Order can't be used used by Nodes that have SpriteBatchNode as one of their ancestors.
-		And if ClippingNode is one of the ancestors, then "global Z order" will be relative to the ClippingNode.
-		!#zh
-		定义节点的渲染顺序。
-		节点具有全局 Z 顺序，顺序越小的节点，最先渲染。
-		</br>
-		假设两个或者更多的节点拥有相同的全局 Z 顺序，那么渲染顺序无法保证。
-		唯一的例外是如果节点的全局 Z 顺序为零，那么场景中的顺序是可以使用默认的。
-		</br>
-		所有的节点全局 Z 顺序都是零。这就是说，默认使用场景中的顺序来渲染节点。
-		</br>
-		全局 Z 顺序是非常有用的当你需要渲染节点按照不同的顺序而不是场景顺序。
-		</br>
-		局限性: 全局 Z 顺序不能够被拥有继承 “SpriteBatchNode” 的节点使用。
-		并且如果 “ClippingNode” 是其中之一的上代，那么 “global Z order” 将会和 “ClippingNode” 有关。
-		
-		@example 
-		```js
-		node.setGlobalZOrder(0);
-		``` 
-		*/
-		setGlobalZOrder(globalZOrder : number) : void;		
-		/** !#en Return the Node's Global Z Order.
-		!#zh 获取节点的全局 Z 顺序。
-		
-		@example 
-		```js
-		cc.log("Global Z Order: " + node.getGlobalZOrder());
-		``` 
-		*/
-		getGlobalZOrder() : number;		
-		/** !#en
 		Returns the scale factor of the node.
 		Assertion will fail when _scaleX != _scaleY.
 		!#zh 获取节点的缩放。当 X 轴和 Y 轴有相同的缩放数值时。
@@ -7919,7 +8222,7 @@ declare module cc {
 		getScale() : number;		
 		/** !#en Sets the scale factor of the node. 1.0 is the default scale factor. This function can modify the X and Y scale at the same time.
 		!#zh 设置节点的缩放比例，默认值为 1.0。这个函数可以在同一时间修改 X 和 Y 缩放。
-		@param scale scaleX or scale
+		@param scaleX scaleX or scale
 		
 		@example 
 		```js
@@ -7927,7 +8230,7 @@ declare module cc {
 		node.setScale(1, 1);
 		``` 
 		*/
-		setScale(scale : number|Vec2, scaleY? : number) : void;		
+		setScale(scaleX : number|Vec2, scaleY? : number) : void;		
 		/** !#en Returns a copy of the position (x,y) of the node in cocos2d coordinates. (0,0) is the left-bottom corner.
 		!#zh 获取在父节点坐标系中节点的位置（ x , y ）。
 		
@@ -8255,7 +8558,7 @@ declare module cc {
 		treating the returned/received node point as anchor relative.
 		!#zh
 		将一个点转换到世界空间坐标系。结果以 Vec2 为单位。<br/>
-		返回值将基于节点坐标。
+		返回值将基于世界坐标。
 		
 		@example 
 		```js
@@ -8401,11 +8704,8 @@ declare module cc {
 		!#zh 根据子节点的 zIndex 和 arrivalOrder 进行排序，正常情况下开发者不需要手动调用这个函数。 
 		*/
 		sortAllChildren() : void;		
-		/** !#en position of node.
-		!#zh 节点相对父节点的坐标。 */
-		position : Vec2;		
-		/** !#en Scale of node.
-		!#zh 节点缩放 */
+		/** !#en The local scale relative to the parent.
+		!#zh 节点相对父节点的缩放。 */
 		scale : number;		
 		/** !#en Returns the x axis position of the node in cocos2d coordinates.
 		!#zh 获取节点 X 轴坐标。
@@ -9192,7 +9492,7 @@ declare module cc {
 		export class Quad3 {		
 		/**  
 		*/
-		Quad3(bl1: (x: number, y: number, z: number, arrayBuffer: any[], offset: number) => void, br1: (x: number, y: number, z: number, arrayBuffer: any[], offset: number) => void, tl1: (x: number, y: number, z: number, arrayBuffer: any[], offset: number) => void, tr1: (x: number, y: number, z: number, arrayBuffer: any[], offset: number) => void) : Quad3;	
+		Quad3(bl1: (x: number, y: number, z: number, arrayBuffer: any[], offset: number) => void, br1: (x: number, y: number, z: number, arrayBuffer: any[], offset: number) => void, tl1: (x: number, y: number, z: number, arrayBuffer: any[], offset: number) => void, tr1: (x: number, y: number, z: number, arrayBuffer: any[], offset: number) => void, arrayBuffer : any[], offset : number) : Quad3;	
 	}		
 		/** undefined */
 		export class V3F_C4B_T2F {		
@@ -9654,7 +9954,11 @@ declare module cc {
 			VERTICAL = 0,
 			DIAGONAL = 0,
 			FLIPPED_ALL = 0,
-			FLIPPED_MASK = 0,		
+			FLIPPED_MASK = 0,
+			STAGGERAXIS_X = 0,
+			STAGGERAXIS_Y = 0,
+			STAGGERINDEX_ODD = 0,
+			STAGGERINDEX_EVEN = 0,		
 		}	
 	}	
 	
@@ -9697,7 +10001,7 @@ declare module cc {
 			handler : string;			
 			/**  
 			*/
-			emitEvents(events : Component.EventHandler[]) : void;			
+			emitEvents(events : Component.EventHandler[], params : any) : void;			
 			/** !#en Emit event with params
 			!#zh 触发目标组件上的指定 handler 函数，该参数是回调函数的参数值（可不填）。
 			
@@ -9708,10 +10012,10 @@ declare module cc {
 			eventHandler.target = newTarget;
 			eventHandler.component = "MainMenu";
 			eventHandler.handler = "OnClick"
-			eventHandler.emit("This is the argument to the callback function!");
+			eventHandler.emit(["param1", "param2", ....]);
 			``` 
 			*/
-			emit(params : any) : void;		
+			emit(params : any[]) : void;		
 		}	
 	}	
 	
@@ -10000,11 +10304,40 @@ declare module cc {
 	*****************************************************/
 	
 	export module VideoPlayer {		
+		/** !#en Video event type
+		!#zh 视频事件类型 */
+		export enum EventType {			
+			PLAYING = 0,
+			PAUSED = 0,
+			STOPPED = 0,
+			COMPLETED = 0,		
+		}	
+	}	
+	
+	/****************************************************
+	* VideoPlayer
+	*****************************************************/
+	
+	export module VideoPlayer {		
 		/** !#en Enum for video resouce type type.
 		!#zh 视频来源 */
 		export enum ResourceType {			
 			REMOTE = 0,
 			LOCAL = 0,		
+		}	
+	}	
+	
+	/****************************************************
+	* WebView
+	*****************************************************/
+	
+	export module WebView {		
+		/** !#en WebView event type
+		!#zh 网页视图事件类型 */
+		export enum EventType {			
+			LOADED = 0,
+			LOADING = 0,
+			ERROR = 0,		
 		}	
 	}	
 	
@@ -10214,6 +10547,34 @@ declare module cc {
 	}	
 	
 	/****************************************************
+	* Graphics
+	*****************************************************/
+	
+	export module Graphics {		
+		/** !#en Enum for LineCap.
+		!#zh 线段末端属性 */
+		export enum LineCap {			
+			BUTT = 0,
+			ROUND = 0,
+			SQUARE = 0,		
+		}	
+	}	
+	
+	/****************************************************
+	* Graphics
+	*****************************************************/
+	
+	export module Graphics {		
+		/** !#en Enum for LineJoin.
+		!#zh 线段拐角属性 */
+		export enum LineJoin {			
+			BEVEL = 0,
+			ROUND = 0,
+			MITER = 0,		
+		}	
+	}	
+	
+	/****************************************************
 	* Pipeline
 	*****************************************************/
 	
@@ -10290,6 +10651,1159 @@ declare module cc {
 			CLAMP_TO_EDGE = 0,
 			MIRRORED_REPEAT = 0,		
 		}	
+	}
+}
+/** !#en
+AnySDK is a third party solution that offers game developers SDK integration without making changes to the SDK's features or parameters.It can do all of this while remaining invisible to your end user.Our goal is to handle all the tedious SDK integration work for you so that you can use your time to focus on the game itself.No matter if it’s the channel SDK, user system, payment system, ad system, statistics system, sharing system or any other type of SDK: we’ll take care of it for you.
+!#zh
+AnySDK 为 CP 提供一套第三方 SDK 接入解决方案，整个接入过程，不改变任何 SDK 的功能、特性、参数等，对于最终玩家而言是完全透明无感知的。
+目的是让 CP 商能有更多时间更专注于游戏本身的品质，所有 SDK 的接入工作统统交给我们吧。第三方 SDK 包括了渠道SDK、用户系统、支付系统、广告系统、统计系统、分享系统等等。 */
+declare module anysdk {	
+	/** !#en
+	agent manager of plugin
+	!#zh
+	插件管理对象 */
+	export var agentManager : anysdk.AgentManager;		
+		/** !#en
+		agent manager of plugin
+		!#zh
+		插件管理类 */
+		export class AgentManager {		
+		constructor();		
+		/** !#en
+		AppKey appSecret and privateKey are the only three parameters generated
+		after the packing tool client finishes creating the game.
+		The oauthLoginServer parameter is the API address provided by the game service
+		to login verification
+		!#zh
+		appKey、appSecret、privateKey是通过 AnySDK 客户端工具创建游戏后生成的。
+		oauthLoginServer参数是游戏服务提供的用来做登陆验证转发的接口地址。 
+		*/
+		init(appKey : string, appSecret : string, privateKey : string, oauthLoginServer : string) : void;		
+		/** !#en
+		load all plugins, the operation includes SDK`s initialization
+		!#zh
+		加载所有插件，该操作包含了 SDKs 初始化
+		@param target The object to bind to. 
+		*/
+		loadAllPlugins(callback : Function, target : any) : void;		
+		/** !#en
+		unload all plugins
+		!#zh
+		卸载插件 
+		*/
+		unloadAllPlugins() : void;		
+		/** !#en
+		get user system plugin
+		!#zh
+		获取用户系统插件 
+		*/
+		getUserPlugin() : anysdk.ProtocolUser;		
+		/** !#en
+		get IAP system plugins
+		!#zh
+		获取支付系统插件 
+		*/
+		getIAPPlugins() : anysdk.ProtocolIAP;		
+		/** !#en
+		get IAP system plugin
+		!#zh
+		获取支付系统插件 
+		*/
+		getIAPPlugin() : anysdk.ProtocolIAP;		
+		/** !#en
+		get social system plugin
+		!#zh
+		获取社交系统插件 
+		*/
+		getSocialPlugin() : anysdk.ProtocolSocial;		
+		/** !#en
+		get share system plugin
+		!#zh
+		获取分享系统插件 
+		*/
+		getSharePlugin() : anysdk.ProtocolShare;		
+		/** !#en
+		get analytics system plugin
+		!#zh
+		获取统计系统插件 
+		*/
+		getAnalyticsPlugin() : anysdk.ProtocolAnalytics;		
+		/** !#en
+		get ads system plugin
+		!#zh
+		获取广告系统插件 
+		*/
+		getAdsPlugin() : anysdk.ProtocolAds;		
+		/** !#en
+		get push system plugin
+		!#zh
+		获取推送系统插件 
+		*/
+		getPushPlugin() : anysdk.ProtocolPush;		
+		/** !#en
+		get REC system plugin
+		!#zh
+		获取录屏系统插件 
+		*/
+		getRECPlugin() : anysdk.ProtocolREC;		
+		/** !#en
+		get crash system plugin
+		!#zh
+		获取崩溃分析系统插件 
+		*/
+		getCrashPlugin() : anysdk.ProtocolCrash;		
+		/** !#en
+		get ad track system plugin
+		!#zh
+		获取广告追踪系统插件 
+		*/
+		getAdTrackingPlugin() : anysdk.ProtocolAdTracking;		
+		/** !#en
+		get custom system plugin
+		!#zh
+		获取自定义系统插件 
+		*/
+		getCustomPlugin() : anysdk.ProtocolCustom;		
+		/** !#en
+		get custom parameter
+		!#zh
+		获取自定义参数 
+		*/
+		getCustomParam() : string;		
+		/** !#en
+		get channel id
+		!#zh
+		获取渠道唯一表示符 
+		*/
+		getChannelId() : string;		
+		/** !#en
+		get status of analytics
+		!#zh
+		获取统计状态 
+		*/
+		isAnaylticsEnabled() : boolean;		
+		/** !#en
+		set whether to analytics
+		!#zh
+		设置是否统计 
+		*/
+		setIsAnaylticsEnabled(enabled : boolean) : void;		
+		/** !#en
+		destory instance
+		!#zh
+		销毁单例 
+		*/
+		end() : void;		
+		/** !#en
+		get instance
+		!#zh
+		获取单例 
+		*/
+		getInstance() : anysdk.AgentManager;	
+	}		
+		/** !#en
+		plugin protocol
+		!#zh
+		插件协议 */
+		export class PluginProtocol {		
+		/** !#en
+		Check whether the function is supported
+		!#zh
+		判断函数是否支持 
+		*/
+		isFunctionSupported(functionName : string) : boolean;		
+		/** !#en
+		get plugin name
+		!#zh
+		获取插件名称 
+		*/
+		getPluginName() : string;		
+		/** !#en
+		get plugin version
+		!#zh
+		获取插件版本 
+		*/
+		getPluginVersion() : string;		
+		/** !#en
+		get SDK version
+		!#zh
+		获取 SDK 版本 
+		*/
+		getSDKVersion() : string;		
+		/** !#en
+		void methods for reflections with parameter
+		!#zh
+		反射调用带参数的void方法
+		@param args optional arguments 
+		*/
+		callFuncWithParam(funName : string, args? : any|anysdk.PluginParam) : void;		
+		/** !#en
+		String methods for reflections with parameter
+		!#zh
+		反射调用带参数的 String 方法
+		@param args optional arguments 
+		*/
+		callStringFuncWithParam(funName : string, args? : any|anysdk.PluginParam) : string;		
+		/** !#en
+		int methods for reflections with parameter
+		!#zh
+		反射调用带参数的 Int 方法
+		@param args optional arguments 
+		*/
+		callIntFuncWithParam(funName : string, args? : any|anysdk.PluginParam) : number;		
+		/** !#en
+		boolean methods for reflections with parameter
+		!#zh
+		反射调用带参数的 boolean 方法
+		@param args optional arguments 
+		*/
+		callBoolFuncWithParam(funName : string, args? : any|anysdk.PluginParam) : boolean;		
+		/** !#en
+		float methods for reflections with parameter
+		!#zh
+		反射调用带参数的 float 方法
+		@param args optional arguments 
+		*/
+		callFloatFuncWithParam(funName : string, args? : any|anysdk.PluginParam) : number;	
+	}		
+		/** !#en
+		user protocol
+		!#zh
+		用户系统协议接口 */
+		export class ProtocolUser extends PluginProtocol {		
+		/** !#en
+		login interface
+		!#zh
+		登录接口
+		@param args optional arguments 
+		*/
+		login(args? : string|any) : void;		
+		/** !#en
+		get status of login
+		!#zh
+		获取登录状态 
+		*/
+		isLogined() : boolean;		
+		/** !#en
+		get user ID
+		!#zh
+		获取用户唯一标示符 
+		*/
+		getUserID() : string;		
+		/** !#en
+		get plugin ID
+		!#zh
+		获取插件ID 
+		*/
+		getPluginId() : string;		
+		/** !#en
+		set listener
+		!#zh
+		设置用户系统的监听 
+		*/
+		setListener(listener : Function, target : any) : void;		
+		/** !#en
+		get listener
+		!#zh
+		获取用户系统的监听 
+		*/
+		getListener() : Function;		
+		/** !#en
+		logout
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		登出，调用前需要判断属性是否存在 
+		*/
+		logout() : void;		
+		/** !#en
+		show toolbar
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		显示悬浮窗，调用前需要判断属性是否存在 
+		*/
+		showToolBar(place : anysdk.ToolBarPlace) : void;		
+		/** !#en
+		hide toolbar
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		隐藏悬浮窗，调用前需要判断属性是否存在 
+		*/
+		hideToolBar() : void;		
+		/** !#en
+		enter platform
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		显示平台中心，调用前需要判断属性是否存在 
+		*/
+		enterPlatform() : void;		
+		/** !#en
+		show exit page
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		显示退出界面，调用前需要判断属性是否存在 
+		*/
+		exit() : void;		
+		/** !#en
+		show pause page
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		显示暂停界面，调用前需要判断属性是否存在 
+		*/
+		pause() : void;		
+		/** !#en
+		Real-name registration
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		实名注册，调用前需要判断属性是否存在 
+		*/
+		realNameRegister() : void;		
+		/** !#en
+		Anti-addiction query
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		防沉迷查询，调用前需要判断属性是否存在 
+		*/
+		antiAddictionQuery() : void;		
+		/** !#en
+		submit game role information
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		提交角色信息，调用前需要判断属性是否存在 
+		*/
+		submitLoginGameRole(data : any) : void;		
+		/** !#en
+		get user information
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		获取用户信息，调用前需要判断属性是否存在 
+		*/
+		getUserInfo(info : any) : void;		
+		/** !#en
+		set login type
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		设置登录类型，调用前需要判断属性是否存在 
+		*/
+		getAvailableLoginType(info : any) : void;		
+		/** !#en
+		set login type
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		设置登录类型，调用前需要判断属性是否存在 
+		*/
+		setLoginType(loginType : string) : void;		
+		/** !#en
+		send to desktop
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		发送到桌面，调用前需要判断属性是否存在 
+		*/
+		sendToDesktop() : void;		
+		/** !#en
+		open bbs
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		打开论坛，调用前需要判断属性是否存在 
+		*/
+		openBBS() : void;	
+	}		
+		/** !#en
+		IAP protocol
+		!#zh
+		支付系统协议接口 */
+		export class ProtocolIAP extends PluginProtocol {		
+		/** !#en
+		pay interface
+		!#zh
+		支付接口
+		@param info Type:map 
+		*/
+		payForProduct(info : any) : void;		
+		/** !#en
+		get order ID
+		!#zh
+		获取订单ID 
+		*/
+		getOrderId() : string;		
+		/** !#en
+		reset the pay status
+		!#zh
+		重置支付状态 
+		*/
+		resetPayState() : void;		
+		/** !#en
+		get plugin ID
+		!#zh
+		获取插件ID 
+		*/
+		getPluginId() : string;		
+		/** !#en
+		set listener
+		!#zh
+		设置支付系统的监听 
+		*/
+		setListener(listener : Function, target : any) : void;		
+		/** !#en
+		get listener
+		!#zh
+		获取支付系统的监听 
+		*/
+		getListener() : Function;	
+	}		
+		/** !#en
+		analytics protocol
+		!#zh
+		统计系统协议接口 */
+		export class ProtocolAnalytics extends PluginProtocol {		
+		/** !#en
+		Start a new session.
+		!#zh
+		启动会话 
+		*/
+		startSession() : void;		
+		/** !#en
+		 Stop a session.
+		!#zh
+		关闭会话 
+		*/
+		stopSession() : void;		
+		/** !#en
+		Set the timeout for expiring a session.
+		!#zh
+		设置会话超时时间
+		@param millis Type: long 
+		*/
+		setSessionContinueMillis(millis : number) : void;		
+		/** !#en
+		log an error
+		!#zh
+		捕捉异常 
+		*/
+		logError(errorId : string, message : string) : void;		
+		/** !#en
+		log an event.
+		!#zh
+		捕捉事件
+		@param args optional arguments Type: map 
+		*/
+		logEvent(errorId : string, args? : any) : void;		
+		/** !#en
+		Track an event begin.
+		!#zh
+		统计事件开始 
+		*/
+		logTimedEventBegin(eventId : string) : void;		
+		/** !#en
+		Track an event end.
+		!#zh
+		统计事件结束 
+		*/
+		logTimedEventEnd(eventId : string) : void;		
+		/** !#en
+		set Whether to catch uncaught exceptions to server.
+		!#zh
+		设置是否开启自动异常捕捉 
+		*/
+		setCaptureUncaughtException(enabled : boolean) : void;		
+		/** !#en
+		analytics account information
+		!#zh
+		统计玩家帐户信息
+		@param paramMap Type: map 
+		*/
+		setAccount(paramMap : any) : void;		
+		/** !#en
+		track user to request payment
+		!#zh
+		跟踪用户支付请求
+		@param paramMap Type: map 
+		*/
+		onChargeRequest(paramMap : any) : void;		
+		/** !#en
+		track Successful payment
+		!#zh
+		追踪用户支付成功 
+		*/
+		onChargeSuccess(orderID : string) : void;		
+		/** !#en
+		track failed payment
+		!#zh
+		追踪用户支付失败
+		@param paramMap Type: map 
+		*/
+		onChargeFail(paramMap : any) : void;		
+		/** !#en
+		track Successful payment
+		!#zh
+		统计玩家支付成功
+		@param paramMap Type: map 
+		*/
+		onChargeOnlySuccess(paramMap : any) : void;		
+		/** !#en
+		track user purchase
+		!#zh
+		统计玩家消费
+		@param paramMap Type: map 
+		*/
+		onPurchase(paramMap : any) : void;		
+		/** !#en
+		track user to use goods
+		!#zh
+		统计玩家使用道具
+		@param paramMap Type: map 
+		*/
+		onUse(paramMap : any) : void;		
+		/** !#en
+		track user to reward goods
+		!#zh
+		统计玩家获取奖励
+		@param paramMap Type: map 
+		*/
+		onReward(paramMap : any) : void;		
+		/** !#en
+		 start level
+		!#zh
+		开始关卡
+		@param paramMap Type: map 
+		*/
+		startLevel(paramMap : any) : void;		
+		/** !#en
+		finish level
+		!#zh
+		结束关卡 
+		*/
+		finishLevel(levelID : string) : void;		
+		/** !#en
+		failed level
+		!#zh
+		关卡失败
+		@param paramMap Type: map 
+		*/
+		failLevel(paramMap : any) : void;		
+		/** !#en
+		start task
+		!#zh
+		开始任务
+		@param paramMap Type: map 
+		*/
+		startTask(paramMap : any) : void;		
+		/** !#en
+		finish task
+		!#zh
+		完成任务 
+		*/
+		finishTask(taskID : string) : void;		
+		/** !#en
+		failed task
+		!#zh
+		任务失败
+		@param paramMap Type: map 
+		*/
+		failTask(paramMap : any) : void;	
+	}		
+		/** !#en
+		share protocol
+		!#zh
+		分享系统协议接口 */
+		export class ProtocolShare extends PluginProtocol {		
+		/** !#en
+		share interface
+		!#zh
+		分享
+		@param info Type: map 
+		*/
+		share(info : any) : void;		
+		/** !#en
+		set listener
+		!#zh
+		设置分享系统的监听 
+		*/
+		setListener(listener : Function, target : any) : void;		
+		/** !#en
+		get listener
+		!#zh
+		获取分享系统的监听 
+		*/
+		getListener() : Function;	
+	}		
+		/** !#en
+		ads protocol
+		!#zh
+		广告系统协议接口 */
+		export class ProtocolAds extends PluginProtocol {		
+		/** !#en
+		hide ads view
+		!#zh
+		隐藏广告 
+		*/
+		hideAds(adstype : anysdk.AdsType, idx : number) : void;		
+		/** !#en
+		preload ads view
+		!#zh
+		预加载广告 
+		*/
+		preloadAds(adstype : anysdk.AdsType, idx : number) : void;		
+		/** !#en
+		query points
+		!#zh
+		查询分数 
+		*/
+		queryPoints() : number;		
+		/** !#en
+		get whether the ads type is supported
+		!#zh
+		获取广告类型是否支持 
+		*/
+		isAdTypeSupported(arg0 : anysdk.AdsType) : boolean;		
+		/** !#en
+		spend point
+		!#zh
+		消费分数 
+		*/
+		spendPoints(points : number) : void;		
+		/** !#en
+		set listener
+		!#zh
+		设置广告系统的监听 
+		*/
+		setListener(listener : Function, target : any) : void;		
+		/** !#en
+		get listener
+		!#zh
+		获取广告系统的监听 
+		*/
+		getListener() : Function;	
+	}		
+		/** !#en
+		social protocol
+		!#zh
+		社交系统协议接口 */
+		export class ProtocolSocial extends PluginProtocol {		
+		/** !#en
+		sign in
+		!#zh
+		登录 
+		*/
+		signIn() : void;		
+		/** !#en
+		 sign out
+		!#zh
+		登出 
+		*/
+		signOut() : void;		
+		/** !#en
+		submit score
+		!#zh
+		提交分数
+		@param score Type: long 
+		*/
+		submitScore(leadboardID : string, score : number) : void;		
+		/** !#en
+		show the id of Leaderboard page
+		!#zh
+		根据唯一标识符显示排行榜 
+		*/
+		showLeaderboard(leaderboardID : string) : void;		
+		/** !#en
+		show the page of achievements
+		!#zh
+		显示成就榜 
+		*/
+		showAchievements() : void;		
+		/** !#en
+		unlock achievement
+		!#zh
+		解锁成就
+		@param info Type: map 
+		*/
+		share(info : any) : void;		
+		/** !#en
+		set listener
+		!#zh
+		设置社交系统的监听 
+		*/
+		setListener(listener : Function, target : any) : void;		
+		/** !#en
+		get listener
+		!#zh
+		获取社交系统的监听 
+		*/
+		getListener() : Function;		
+		/** !#en
+		get friends info
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		获取好友信息，调用前需要判断属性是否存在 
+		*/
+		pauseRecording() : void;		
+		/** !#en
+		interact
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		订阅，调用前需要判断属性是否存在 
+		*/
+		interact() : void;		
+		/** !#en
+		subscribe
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		关注，调用前需要判断属性是否存在 
+		*/
+		subscribe() : void;	
+	}		
+		/** !#en
+		push protocol
+		!#zh
+		推送系统协议接口 */
+		export class ProtocolPush extends PluginProtocol {		
+		/** !#en
+		start Push services
+		!#zh
+		启动推送服务 
+		*/
+		startPush() : void;		
+		/** !#en
+		close Push services
+		!#zh
+		暂停推送服务 
+		*/
+		closePush() : void;		
+		/** !#en
+		delete alias
+		!#zh
+		删除别名 
+		*/
+		delAlias(alias : string) : void;		
+		/** !#en
+		set alias
+		!#zh
+		设置别名 
+		*/
+		setAlias(alias : string) : void;		
+		/** !#en
+		delete tags
+		!#zh
+		删除标签
+		@param tags Type: list 
+		*/
+		delTags(tags : any) : void;		
+		/** !#en
+		set tags
+		!#zh
+		设置标签
+		@param tags Type: list 
+		*/
+		setTags(tags : any) : void;		
+		/** !#en
+		set listener
+		!#zh
+		设置推送系统的监听 
+		*/
+		setListener(listener : Function, target : any) : void;		
+		/** !#en
+		get listener
+		!#zh
+		获取推送系统的监听 
+		*/
+		getListener() : Function;	
+	}		
+		/** !#en
+		crash protocol
+		!#zh
+		崩溃分析系统协议接口 */
+		export class ProtocolCrash extends PluginProtocol {		
+		/** !#en
+		set user identifier
+		!#zh
+		统计用户唯一标识符 
+		*/
+		setUserIdentifier(identifier : string) : void;		
+		/** !#en
+		The uploader captured in exception information
+		!#zh
+		上报异常信息 
+		*/
+		reportException(message : string, exception : string) : void;		
+		/** !#en
+		customize logging
+		!#zh
+		自定义日志记录 
+		*/
+		leaveBreadcrumb(breadcrumb : string) : void;	
+	}		
+		/** !#en
+		REC protocol
+		!#zh
+		录屏系统协议接口 */
+		export class ProtocolREC extends PluginProtocol {		
+		/** !#en
+		share video
+		!#zh
+		分享视频
+		@param info Type: map 
+		*/
+		share(info : any) : void;		
+		/** !#en
+		Start to record video
+		!#zh
+		开始录制视频 
+		*/
+		startRecording() : void;		
+		/** !#en
+		Start to record video
+		!#zh
+		结束录制视频 
+		*/
+		stopRecording() : void;		
+		/** !#en
+		set listener
+		!#zh
+		设置录屏系统的监听 
+		*/
+		setListener(listener : Function, target : any) : void;		
+		/** !#en
+		get listener
+		!#zh
+		获取录屏系统的监听 
+		*/
+		getListener() : Function;		
+		/** !#en
+		pause to record video
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		暂停录制视频，调用前需要判断属性是否存在 
+		*/
+		pauseRecording() : void;		
+		/** !#en
+		resume to record video
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		恢复录制视频，调用前需要判断属性是否存在 
+		*/
+		resumeRecording() : void;		
+		/** !#en
+		get whether the device is isAvailable
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		获取设备是否可用，调用前需要判断属性是否存在 
+		*/
+		isAvailable() : boolean;		
+		/** !#en
+		get status of recording
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		获取录制状态，调用前需要判断属性是否存在 
+		*/
+		isRecording() : boolean;		
+		/** !#en
+		show toolbar
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		显示悬浮窗，调用前需要判断属性是否存在 
+		*/
+		showToolBar() : void;		
+		/** !#en
+		hide toolbar
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		隐藏悬浮窗，调用前需要判断属性是否存在 
+		*/
+		hideToolBar() : void;		
+		/** !#en
+		show video center
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		显示视频中心，调用前需要判断属性是否存在 
+		*/
+		showVideoCenter() : void;		
+		/** !#en
+		enter platform
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		显示平台中心，调用前需要判断属性是否存在 
+		*/
+		enterPlatform() : void;		
+		/** !#en
+		Set the video data, it is recommended to check whether are recorded firstly
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		设置视频相关数据，建议先检查是否是正在录制，调用前需要判断属性是否存在
+		@param info Type: map 
+		*/
+		setMetaData(info : any) : void;	
+	}		
+		/** !#en
+		ad tracking protocol
+		!#zh
+		广告追踪系统协议接口 */
+		export class ProtocolAdTracking extends PluginProtocol {		
+		/** !#en
+		Call this method if you want to track register events as happening during a section.
+		!#zh
+		统计用户注册信息
+		@param productInfo Type: map 
+		*/
+		onPay(productInfo : any) : void;		
+		/** !#en
+		Call this method if you want to track register events as happening during a section.
+		!#zh
+		统计用户注册信息
+		@param userInfo Type: map 
+		*/
+		onLogin(userInfo : any) : void;		
+		/** !#en
+		Call this method if you want to track register events as happening during a section.
+		!#zh
+		统计用户注册信息 
+		*/
+		onRegister(userId : string) : void;		
+		/** !#en
+		Call this method if you want to track custom events with parameters as happening during a section.
+		!#zh
+		统计自定义事件
+		@param paramMap Type: map 
+		*/
+		trackEvent(eventId : string, paramMap : any) : void;		
+		/** !#en
+		Call this method with parameters if you want to create role as happening during a section.
+		!#zh
+		统计创建角色事件，调用前需要判断属性是否存在
+		@param userInfo Type: map 
+		*/
+		onCreateRole(userInfo : any) : void;		
+		/** !#en
+		Call this method if you want to track levelup events with parameters as happening during a section.
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		统计角色升级事件，调用前需要判断属性是否存在
+		@param info Type: map 
+		*/
+		onLevelUp(info : any) : void;		
+		/** !#en
+		Invoke this method with parameters if you want to start to pay as happening during a section.
+		Before to invoke, you need to verdict whether this properties existed
+		!#zh
+		统计开始充值事件，调用前需要判断属性是否存在
+		@param info Type: map 
+		*/
+		onStartToPay(info : any) : void;	
+	}		
+		/** !#en
+		custom protocol
+		!#zh
+		自定义系统协议接口 */
+		export class ProtocolCustom extends PluginProtocol {		
+		/** !#en
+		set listener
+		!#zh
+		设置自定义系统的监听 
+		*/
+		setListener(listener : Function, target : any) : void;		
+		/** !#en
+		get listener
+		!#zh
+		获取自定义系统的监听 
+		*/
+		getListener() : Function;	
+	}		
+		/** !#en
+		Data structure class
+		!#zh
+		数据结构类 */
+		export class PluginParam {		
+		constructor();		
+		/** !#en
+		create plugin parameters
+		!#zh
+		创建对象 
+		*/
+		create(parameters : number|string|any) : anysdk.PluginParam;	
+	}	
+	/** !#en The callback of user system
+	!#zh 用户系统回调 */
+	export enum UserActionResultCode {		
+		kInitSuccess = 0,
+		kInitFail = 0,
+		kLoginSuccess = 0,
+		kLoginNetworkError = 0,
+		kLoginNoNeed = 0,
+		kLoginFail = 0,
+		kLoginCancel = 0,
+		kLogoutSuccess = 0,
+		kLogoutFail = 0,
+		kPlatformEnter = 0,
+		kPlatformBack = 0,
+		kPausePage = 0,
+		kExitPage = 0,
+		kAntiAddictionQuery = 0,
+		kRealNameRegister = 0,
+		kAccountSwitchSuccess = 0,
+		kAccountSwitchFail = 0,
+		kOpenShop = 0,
+		kAccountSwitchCancel = 0,
+		kUserExtension = 0,
+		kSendToDesktopSuccess = 0,
+		kSendToDesktopFail = 0,
+		kGetAvailableLoginTypeSuccess = 0,
+		kGetAvailableLoginTypeFail = 0,
+		kGetUserInfoSuccess = 0,
+		kGetUserInfoFail = 0,
+		kOpenBBSSuccess = 0,
+		kOpenBBSFail = 0,	
+	}	
+	/** !#en The toolbar position of user type
+	!#zh 用户系统悬浮窗位置 */
+	export enum ToolBarPlace {		
+		kToolBarTopLeft = 0,
+		kToolBarTopRight = 0,
+		kToolBarMidLeft = 0,
+		kToolBarMidRight = 0,
+		kToolBarBottomLeft = 0,
+		kToolBarBottomRight = 0,	
+	}	
+	/** !#en The callback of requesting reStringge
+	!#zh 支付系统支付请求回调 */
+	export enum PayResultCode {		
+		kPaySuccess = 0,
+		kPayFail = 0,
+		kPayCancel = 0,
+		kPayNetworkError = 0,
+		kPayProductionInforIncomplete = 0,
+		kPayInitSuccess = 0,
+		kPayInitFail = 0,
+		kPayNowPaying = 0,
+		kPayReStringgeSuccess = 0,
+		kPayExtension = 0,
+		kPayNeedLoginAgain = 0,
+		kRequestSuccess = 0,
+		kRequestFail = 0,	
+	}	
+	/** !#en The enum of account type
+	!#zh 统计系统的账号类型 */
+	export enum AccountType {		
+		ANONYMOUS = 0,
+		REGISTED = 0,
+		SINA_WEIBO = 0,
+		TENCENT_WEIBO = 0,
+		QQ = 0,
+		ND91 = 0,	
+	}	
+	/** !#en The enum of account operation
+	!#zh 统计系统的账号操作 */
+	export enum AccountOperate {		
+		LOGIN = 0,
+		LOGOUT = 0,
+		REGISTER = 0,	
+	}	
+	/** !#en The enum of gender
+	!#zh 统计系统的账号性别 */
+	export enum AccountGender {		
+		MALE = 0,
+		FEMALE = 0,
+		UNKNOWN = 0,	
+	}	
+	/** !#en The enum of task type
+	!#zh 统计系统的任务类型 */
+	export enum TaskType {		
+		GUIDE_LINE = 0,
+		MAIN_LINE = 0,
+		BRANCH_LINE = 0,
+		DAILY = 0,
+		ACTIVITY = 0,
+		OTHER = 0,	
+	}	
+	/** !#en The callback of share system
+	!#zh 分享系统回调 */
+	export enum ShareResultCode {		
+		kShareSuccess = 0,
+		kShareFail = 0,
+		kShareCancel = 0,
+		kShareNetworkError = 0,
+		kShareExtension = 0,	
+	}	
+	/** !#en The callback of social system
+	!#zh 社交系统回调 */
+	export enum SocialRetCode {		
+		kScoreSubmitSucceed = 0,
+		kScoreSubmitfail = 0,
+		kAchUnlockSucceed = 0,
+		kAchUnlockFail = 0,
+		kSocialSignInSucceed = 0,
+		kSocialSignInFail = 0,
+		kSocialSignOutSucceed = 0,
+		kSocialSignOutFail = 0,
+		kSocialGetGameFriends = 0,
+		kSocialExtensionCode = 0,
+		kSocialGetFriendsInfoSuccess = 0,
+		kSocialGetFriendsInfoFail = 0,
+		kSocialAlreadySubscription = 0,
+		kSocialNoSubscription = 0,
+		kSocialSubscriptionFail = 0,	
+	}	
+	/** !#en The callback of ads system
+	!#zh 广告系统回调 */
+	export enum AdsResultCode {		
+		kAdsReceived = 0,
+		kAdsShown = 0,
+		kAdsDismissed = 0,
+		kPointsSpendSucceed = 0,
+		kPointsSpendFailed = 0,
+		kNetworkError = 0,
+		kUnknownError = 0,
+		kOfferWallOnPointsChanged = 0,
+		kRewardedVideoWithReward = 0,
+		kInAppPurchaseFinished = 0,
+		kAdsClicked = 0,
+		kAdsExtension = 0,	
+	}	
+	/** !#en The enum of ads position
+	!#zh 广告位置 */
+	export enum AdsPos {		
+		kPosCenter = 0,
+		kPosTop = 0,
+		kPosTopLeft = 0,
+		kPosTopRight = 0,
+		kPosBottom = 0,
+		kPosBottomLeft = 0,
+		kPosBottomRight = 0,	
+	}	
+	/** !#en The enum of ads type
+	!#zh 广告类型 */
+	export enum AdsType {		
+		AD_TYPE_BANNER = 0,
+		AD_TYPE_FULLSCREEN = 0,
+		AD_TYPE_MOREAPP = 0,
+		AD_TYPE_OFFERWALL = 0,
+		AD_TYPE_REWARDEDVIDEOc = 0,
+		AD_TYPE_NATIVEEXPRESS = 0,
+		AD_TYPE_NATIVEADVANCED = 0,	
+	}	
+	/** !#en The callback of push system
+	!#zh 推送系统回调 */
+	export enum PushActionResultCode {		
+		kPushReceiveMessage = 0,
+		kPushExtensionCode = 0,	
+	}	
+	/** !#en The callback of custom system
+	!#zh 自定义系统回调 */
+	export enum CustomResultCode {		
+		kCustomExtension = 0,	
+	}	
+	/** !#en The callback of REC system
+	!#zh 录屏系统回调 */
+	export enum RECResultCode {		
+		kRECInitSuccess = 0,
+		kRECInitFail = 0,
+		kRECStartRecording = 0,
+		kRECStopRecording = 0,
+		kRECPauseRecording = 0,
+		kRECResumeRecording = 0,
+		kRECEnterSDKPage = 0,
+		kRECQuitSDKPage = 0,
+		kRECShareSuccess = 0,
+		kRECShareFail = 0,
+		kRECExtension = 0,	
 	}
 }
 /** !#en
@@ -10484,7 +11998,7 @@ declare module sp {
 		!#zh 可查看 Spine 官方文档 http://zh.esotericsoftware.com/spine-json-format */
 		skeletonJson : any;		
 		atlasText : string;		
-		textures : Texture2D;		
+		textures : cc.Texture2D;		
 		/** !#en
 		A scale can be specified on the JSON or binary loader which will scale the bone positions,
 		image sizes, and animation translations.
@@ -10522,7 +12036,8 @@ declare module js {
 	Then you can use this function if you care about this case. 
 	*/
 	export function isString(obj : any) : boolean;	
-	/** copy all properties not defined in obj from arguments[1...n]
+	/** This method is deprecated, use cc.js.mixin please.<br>
+	Copy all properties not defined in obj from arguments[1...n]
 	@param obj object to extend its properties
 	@param sourceObj source object to copy properties from 
 	*/
