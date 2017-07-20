@@ -798,13 +798,19 @@ var tableView = cc.Class({
             }
         }
     },
-    //移动距离小于100点则不翻页
+    //移动距离小于25%则不翻页
     _pageMove: function (event) {
         var x = this._view.width;
         var y = this._view.height;
 
         if (this.ViewType === ViewType.Flip) {
+            var offset = this.getScrollOffset();
+            var offsetMax = this.getMaxScrollOffset();
+
             if (this.ScrollModel === ScrollModel.Horizontal) {
+                if (offset.x >= 0 || offset.x <= -offsetMax.x) {
+                    return;
+                }
                 y = 0;
                 if (Math.abs(event.getLocation().x - event.getStartLocation().x) > this._view.width / 4) {
                     if (this._scrollDirection === ScrollDirection.Left) {
@@ -819,15 +825,12 @@ var tableView = cc.Class({
                         } else {
                             return;
                         }
-                    } else {
-                        var offset = this.getScrollOffset();
-                        var offsetMax = this.getMaxScrollOffset();
-                        if (offset.x >= 0 || offset.x <= -offsetMax.x) {
-                            return;
-                        }
                     }
                 }
             } else {
+                if (offset.y >= offsetMax.y || offset.y <= 0) {
+                    return;
+                }
                 x = 0;
                 if (Math.abs(event.getLocation().y - event.getStartLocation().y) > this._view.height / 4) {
                     if (this._scrollDirection === ScrollDirection.Up) {
@@ -840,12 +843,6 @@ var tableView = cc.Class({
                         if (this._page > 1) {
                             this._changePageNum(-1);
                         } else {
-                            return;
-                        }
-                    } else {
-                        var offset = this.getScrollOffset();
-                        var offsetMax = this.getMaxScrollOffset();
-                        if (offset.y >= offsetMax.y || offset.y <= 0) {
                             return;
                         }
                     }
