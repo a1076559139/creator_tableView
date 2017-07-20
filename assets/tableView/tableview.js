@@ -132,6 +132,7 @@ var tableView = cc.Class({
         _cellPoolCache: {},
     },
     onLoad: function () {
+        window.s = this;
         var self = this;
         tableView._tableView.push(this);
 
@@ -278,8 +279,8 @@ var tableView = cc.Class({
         var cell = this._getCell();
         this._setCellAttr(cell, index);
         this._setCellPosition(cell, index);
-        this._initCell(cell);
         cell.parent = this.content;
+        this._initCell(cell);
     },
     _setCellAttr: function (cell, index) {
         cell.tag = index;
@@ -805,7 +806,7 @@ var tableView = cc.Class({
         if (this.ViewType === ViewType.Flip) {
             if (this.ScrollModel === ScrollModel.Horizontal) {
                 y = 0;
-                if (Math.abs(event.getLocation().x - event.getStartLocation().x) > this._view.width / 3) {
+                if (Math.abs(event.getLocation().x - event.getStartLocation().x) > this._view.width / 4) {
                     if (this._scrollDirection === ScrollDirection.Left) {
                         if (this._page < this._pageTotal) {
                             this._changePageNum(1);
@@ -818,11 +819,17 @@ var tableView = cc.Class({
                         } else {
                             return;
                         }
+                    } else {
+                        var offset = this.getScrollOffset();
+                        var offsetMax = this.getMaxScrollOffset();
+                        if (offset.x >= 0 || offset.x <= -offsetMax.x) {
+                            return;
+                        }
                     }
                 }
             } else {
                 x = 0;
-                if (Math.abs(event.getLocation().y - event.getStartLocation().y) > this._view.height / 3) {
+                if (Math.abs(event.getLocation().y - event.getStartLocation().y) > this._view.height / 4) {
                     if (this._scrollDirection === ScrollDirection.Up) {
                         if (this._page < this._pageTotal) {
                             this._changePageNum(1);
@@ -833,6 +840,12 @@ var tableView = cc.Class({
                         if (this._page > 1) {
                             this._changePageNum(-1);
                         } else {
+                            return;
+                        }
+                    } else {
+                        var offset = this.getScrollOffset();
+                        var offsetMax = this.getMaxScrollOffset();
+                        if (offset.y >= offsetMax.y || offset.y <= 0) {
                             return;
                         }
                     }
@@ -977,6 +990,7 @@ var tableView = cc.Class({
             }
         } else {
             if (offset.y < 0) {
+
                 this._scrollDirection = ScrollDirection.Down;
             } else if (offset.y > 0) {
                 this._scrollDirection = ScrollDirection.Up;
