@@ -962,16 +962,16 @@ var tableView = cc.Class({
     },
     _getScrollDirection: function () {
         var offset = this.getScrollOffset();
-        var offsetMax = this.getMaxScrollOffset();
-        if (this.ScrollModel === ScrollModel.Horizontal) {
-            if (offset.x >= 0 || offset.x <= -offsetMax.x) {
-                return;
-            }
-        } else {
-            if (offset.y >= offsetMax.y || offset.y <= 0) {
-                return;
-            }
-        }
+        // var offsetMax = this.getMaxScrollOffset();
+        // if (this.ScrollModel === ScrollModel.Horizontal) {
+        //     if (offset.x >= 0 || offset.x <= -offsetMax.x) {
+        //         return;
+        //     }
+        // } else {
+        //     if (offset.y >= offsetMax.y || offset.y <= 0) {
+        //         return;
+        //     }
+        // }
 
         var lastOffset = this._lastOffset;
         this._lastOffset = offset;
