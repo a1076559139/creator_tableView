@@ -285,6 +285,7 @@ var tableView = cc.Class({
     _setCellAttr: function (cell, index) {
         cell.tag = index;
         cell.zIndex = index;
+        // cell.setSiblingIndex(index);
     },
     _addCellsToView: function () {
         for (var index = 0; index <= this._maxCellIndex; ++index) {
@@ -876,7 +877,8 @@ var tableView = cc.Class({
                             // this._initCell(node);
                             node.tag = this._maxCellIndex;
                             if (nodeBox.xMax + (this._maxCellIndex - this._minCellIndex + 1) * node.width > viewBox.xMin) {
-                                node.zIndex = this._maxCellIndex;
+                                // node.zIndex = this._maxCellIndex;
+                                this._setCellAttr(node, this._maxCellIndex);
                                 this._initCell(node);
                             }
                         } else {
@@ -900,7 +902,8 @@ var tableView = cc.Class({
                             // this._initCell(node);
                             node.tag = this._minCellIndex;
                             if (nodeBox.xMin - (this._maxCellIndex - this._minCellIndex + 1) * node.width < viewBox.xMax) {
-                                node.zIndex = this._minCellIndex;
+                                // node.zIndex = this._minCellIndex;
+                                this._setCellAttr(node, this._minCellIndex);
                                 this._initCell(node);
                             }
                         } else {
@@ -925,7 +928,8 @@ var tableView = cc.Class({
                             // this._initCell(node);
                             node.tag = this._maxCellIndex;
                             if (nodeBox.yMin - (this._maxCellIndex - this._minCellIndex + 1) * node.height < viewBox.yMax) {
-                                node.zIndex = this._maxCellIndex;
+                                // node.zIndex = this._maxCellIndex;
+                                this._setCellAttr(node, this._maxCellIndex);
                                 this._initCell(node);
                             }
                         } else {
@@ -948,7 +952,8 @@ var tableView = cc.Class({
                             // this._initCell(node);
                             node.tag = this._minCellIndex;
                             if (nodeBox.yMax + (this._maxCellIndex - this._minCellIndex + 1) * node.width > viewBox.yMin) {
-                                node.zIndex = this._minCellIndex;
+                                // node.zIndex = this._minCellIndex;
+                                this._setCellAttr(node, this._minCellIndex);
                                 this._initCell(node);
                             }
                         } else {
