@@ -157,10 +157,6 @@ var tableView = cc.Class({
         }
     },
     onDestroy: function () {
-        cc.eventManager.removeListener(this._touchListener);
-        if (CC_JSB) {
-            this._touchListener.release();
-        }
         for (var key in tableView._tableView) {
             if (tableView._tableView[key] === this) {
                 tableView._tableView.splice(key);
@@ -168,62 +164,34 @@ var tableView = cc.Class({
             }
         }
     },
-    _addListenerToTouchLayer: function () {
-        this._touchLayer = new cc.Node();
-        var widget = this._touchLayer.addComponent(cc.Widget);
-        widget.isAlignTop = true;
-        widget.isAlignBottom = true;
-        widget.isAlignLeft = true;
-        widget.isAlignRight = true;
-        widget.top = 0;
-        widget.bottom = 0;
-        widget.left = 0;
-        widget.right = 0;
-        widget.isAlignOnce = false;
-        this._touchLayer.parent = this._view;
-
-        var self = this;
-        // 添加单点触摸事件监听器
-        this._touchListener = cc.EventListener.create({
-            event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches: false,
-            ower: this._touchLayer,
-            mask: _searchMaskParent(this._touchLayer),
-            onTouchBegan: function (touch, event) {
-                var pos = touch.getLocation();
-                var node = this.ower;
-
-                if (node._hitTest(pos, this)) {
-                    self._touchstart(touch);
-                    return true;
-                }
-                return false;
-            },
-            onTouchMoved: function (touch, event) {
-                self._touchmove(touch);
-            },
-            onTouchEnded: function (touch, event) {
-                self._touchend(touch);
-            }
-        });
-        if (CC_JSB) {
-            this._touchListener.retain();
-        }
-        cc.eventManager.addListener(this._touchListener, this._touchLayer);
-    },
-    _setStopPropagation: function () {
+    _addControlEvent: function () {
         this.node.on('touchstart', function (event) {
-            event.stopPropagation();
-        });
+            this._startOffest = this.getScrollOffset();
+            this._touchstart();
+        }, this);
+
         this.node.on('touchmove', function (event) {
-            event.stopPropagation();
-        });
-        this.node.on('touchend', function (event) {
-            event.stopPropagation();
-        });
-        this.node.on('touchcancel', function (event) {
-            event.stopPropagation();
-        });
+            if (!this._startOffest) {
+                this.node.emit('touchstart');
+            } else {
+                this._touchmove(event);
+            }
+        }, this);
+
+        this.node.on('touch-up', function () {
+            var offset = this.getScrollOffset();
+            var p = cc.pSub(offset, this._startOffest);
+            var detail = Math.abs(p.y);
+            if (this.ScrollModel === ScrollModel.Horizontal) {
+                detail = Math.abs(p.x);
+            }
+            this._startOffest = null;
+            this._touchend(detail);
+        }, this);
+
+        this.node.on('touchcancel', function () {
+            this.node.emit('touch-up');
+        }, this);
     },
     //初始化cell
     _initCell: function (cell, reload) {
@@ -506,10 +474,8 @@ var tableView = cc.Class({
             this.horizontalScrollBar && this.horizontalScrollBar.node.on('size-changed', function () {
                 this._updateScrollBar(this._getHowMuchOutOfBoundary());
             }, this);
-            //给触摸层添加时间
-            this._addListenerToTouchLayer();
-            //禁止tableView点击事件向父级传递
-            this._setStopPropagation();
+            // 添加tableView控制事件
+            this._addControlEvent();
             //存在Widget则在下一帧进行初始化
             if (this.node.getComponent(cc.Widget) || this._view.getComponent(cc.Widget) || this.content.getComponent(cc.Widget)) {
                 this.scheduleOnce(this._initTableView);
@@ -525,6 +491,35 @@ var tableView = cc.Class({
         }
     },
     //*************************************************重写ScrollView方法*************************************************//
+    _onTouchMoved: function (event, captureListeners) {
+        if (!this.enabledInHierarchy) return;
+        if (this._hasNestedViewGroup(event, captureListeners)) return;
+
+        var touch = event.touch;
+        if (this.content) {
+            this._handleMoveLogic(touch);
+        }
+        // Do not prevent touch events in inner nodes
+        if (!this.cancelInnerEvents) {
+            return;
+        }
+
+        var deltaMove = cc.pSub(touch.getLocation(), touch.getStartLocation());
+        //FIXME: touch move delta should be calculated by DPI.
+        if (cc.pLength(deltaMove) > 7) {
+            if (!this._touchMoved && event.target !== this.node) {
+                // Simulate touch cancel for target node
+                var cancelEvent = new cc.Event.EventTouch(event.getTouches(), event.bubbles);
+                cancelEvent.type = cc.Node.EventType.TOUCH_CANCEL;
+                cancelEvent.touch = event.touch;
+                cancelEvent.simulate = true;
+                // event.target.dispatchEvent(cancelEvent);
+                event.target.emit(cc.Node.EventType.TOUCH_CANCEL, cancelEvent);
+                this._touchMoved = true;
+            }
+        }
+        this._stopPropagationIfTargetIsMe(event);
+    },
     stopAutoScroll: function () {
         if (this._scheduleInit) {
             this.scheduleOnce(function () {
@@ -758,7 +753,7 @@ var tableView = cc.Class({
             }
         }
     },
-    _touchend: function (event) {
+    _touchend: function (detail) {
         if (this.ScrollModel === ScrollModel.Horizontal) {
             this.horizontal = true;
         } else {
@@ -766,7 +761,7 @@ var tableView = cc.Class({
         }
 
         if (this.ViewType === ViewType.Flip && this._pageTotal > 1) {
-            this._pageMove(event);
+            this._pageMove(detail);
         }
 
         // this._ckickCell(event);
@@ -806,7 +801,7 @@ var tableView = cc.Class({
     //     }
     // },
     //移动距离小于25%则不翻页
-    _pageMove: function (event) {
+    _pageMove: function (detail) {
         var x = this._view.width;
         var y = this._view.height;
 
@@ -819,7 +814,7 @@ var tableView = cc.Class({
                     return;
                 }
                 y = 0;
-                if (Math.abs(event.getLocation().x - event.getStartLocation().x) > this._view.width / 4) {
+                if (detail > this._view.width / 4) {
                     if (this._scrollDirection === ScrollDirection.Left) {
                         if (this._page < this._pageTotal) {
                             this._changePageNum(1);
@@ -839,7 +834,7 @@ var tableView = cc.Class({
                     return;
                 }
                 x = 0;
-                if (Math.abs(event.getLocation().y - event.getStartLocation().y) > this._view.height / 4) {
+                if (detail > this._view.height / 4) {
                     if (this._scrollDirection === ScrollDirection.Up) {
                         if (this._page < this._pageTotal) {
                             this._changePageNum(1);
