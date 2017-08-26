@@ -4,12 +4,11 @@ var Direction = cc.Enum({ LEFT_TO_RIGHT__TOP_TO_BOTTOM: 0, TOP_TO_BOTTOM__LEFT_T
 var ViewType = cc.Enum({ Scroll: 0, Flip: 1 });
 
 var _searchMaskParent = function (node) {
-    if (cc.Mask) {
+    var Mask = cc.Mask;
+    if (Mask) {
         var index = 0;
-        var mask = null;
-        for (var curr = node; curr && curr instanceof cc.Node; curr = curr.parent, ++index) {
-            mask = curr.getComponent(cc.Mask);
-            if (mask) {
+        for (var curr = node; curr && cc.Node.isNode(curr); curr = curr._parent, ++index) {
+            if (curr.getComponent(Mask)) {
                 return {
                     index: index,
                     node: curr
@@ -21,29 +20,37 @@ var _searchMaskParent = function (node) {
     return null;
 };
 
-//返回一个有序数组(对象,排序字段,[0-正序,1-倒序])
-var orderBy = function (o, key, desc) {
-    var a = [];
-    for (var k in o) {
-        for (var i = 0; i < a.length; i++) {
-            if (desc) {
-                if (o[k][key] > a[i][key]) {
-                    a.splice(i, 0, o[k]);
-                    break;
+function quickSort(arr, cb) {
+    //如果数组<=1,则直接返回
+    if (arr.length <= 1) { return arr; }
+    var pivotIndex = Math.floor(arr.length / 2);
+    //找基准
+    var pivot = arr[pivotIndex];
+    //定义左右数组
+    var left = [];
+    var right = [];
+
+    //比基准小的放在left，比基准大的放在right
+    for (var i = 0; i < arr.length; i++) {
+        if (i !== pivotIndex) {
+            if (cb) {
+                if (cb(arr[i], pivot)) {
+                    left.push(arr[i]);
+                } else {
+                    right.push(arr[i]);
                 }
             } else {
-                if (o[k][key] < a[i][key]) {
-                    a.splice(i, 0, o[k]);
-                    break;
+                if (arr[i] <= pivot) {
+                    left.push(arr[i]);
+                } else {
+                    right.push(arr[i]);
                 }
             }
         }
-        if (a.length === i) {
-            a.push(o[k]);
-        }
     }
-    return a;
-};
+    //递归
+    return quickSort(left, cb).concat([pivot], quickSort(right, cb));
+}
 
 var tableView = cc.Class({
     extends: cc.ScrollView,
@@ -227,7 +234,6 @@ var tableView = cc.Class({
                 var viewCell = node.getComponent('viewCell');
                 if (viewCell) {
                     viewCell._cellInit_(this);
-                    // viewCell.init(tag + index, this._data, cell.tag);
                     viewCell.init(tag + index, this._data, reload, [cell.tag, index]);
                 }
             }
@@ -240,7 +246,6 @@ var tableView = cc.Class({
                     var viewCell = node.getComponent('viewCell');
                     if (viewCell) {
                         viewCell._cellInit_(this);
-                        // viewCell.init(this._showCellCount * index + cell.tag % this._showCellCount + tagnum, this._data, index + tag * cell.childrenCount);
                         viewCell.init(this._showCellCount * index + cell.tag % this._showCellCount + tagnum, this._data, reload, [index + tag * cell.childrenCount, index]);
                     }
                 }
@@ -250,7 +255,6 @@ var tableView = cc.Class({
                     var viewCell = node.getComponent('viewCell');
                     if (viewCell) {
                         viewCell._cellInit_(this);
-                        // viewCell.init(index * this._count + cell.tag, this._data, index);
                         viewCell.init(index * this._count + cell.tag, this._data, reload, [index, index]);
                     }
                 }
@@ -675,7 +679,9 @@ var tableView = cc.Class({
         var self = this;
         var f = function () {
             var cells = [];
-            var nodes = orderBy(self.content.children, 'tag');
+            var nodes = quickSort(self.content.children, function (a, b) {
+                return a.tag < b.tag;
+            });
             for (var key in nodes) {
                 var node = nodes[key];
                 for (var k in node.children) {
@@ -765,40 +771,40 @@ var tableView = cc.Class({
 
         // this._ckickCell(event);
     },
-    _ckickCell: function (event) {
-        var srartp = event.getStartLocation();
-        var p = event.getLocation();
+    // _ckickCell: function (event) {
+    //     var srartp = event.getStartLocation();
+    //     var p = event.getLocation();
 
-        if (this.ScrollModel === ScrollModel.Horizontal) {
-            if (Math.abs(p.x - srartp.x) > 7) {
-                return;
-            }
-        } else {
-            if (Math.abs(p.y - srartp.y) > 7) {
-                return;
-            }
-        }
+    //     if (this.ScrollModel === ScrollModel.Horizontal) {
+    //         if (Math.abs(p.x - srartp.x) > 7) {
+    //             return;
+    //         }
+    //     } else {
+    //         if (Math.abs(p.y - srartp.y) > 7) {
+    //             return;
+    //         }
+    //     }
 
-        var convertp = this.content.convertToNodeSpaceAR(p);
-        for (var key in this.content.children) {
-            var node = this.content.children[key];
-            var nodebox = node.getBoundingBox();
-            if (nodebox.contains(convertp)) {
-                convertp = node.convertToNodeSpaceAR(p);
-                for (var k in node.children) {
-                    var cell = node.children[k]
-                    var cellbox = cell.getBoundingBox();
-                    if (cellbox.contains(convertp)) {
-                        if (cell.activeInHierarchy && cell.opacity !== 0) {
-                            cell.clicked();
-                        }
-                        return;
-                    }
-                }
-                return;
-            }
-        }
-    },
+    //     var convertp = this.content.convertToNodeSpaceAR(p);
+    //     for (var key in this.content.children) {
+    //         var node = this.content.children[key];
+    //         var nodebox = node.getBoundingBox();
+    //         if (nodebox.contains(convertp)) {
+    //             convertp = node.convertToNodeSpaceAR(p);
+    //             for (var k in node.children) {
+    //                 var cell = node.children[k]
+    //                 var cellbox = cell.getBoundingBox();
+    //                 if (cellbox.contains(convertp)) {
+    //                     if (cell.activeInHierarchy && cell.opacity !== 0) {
+    //                         cell.clicked();
+    //                     }
+    //                     return;
+    //                 }
+    //             }
+    //             return;
+    //         }
+    //     }
+    // },
     //移动距离小于25%则不翻页
     _pageMove: function (event) {
         var x = this._view.width;
@@ -873,11 +879,8 @@ var tableView = cc.Class({
                             node.x = this.content.getChildByTag(this._maxCellIndex).x + node.width;
                             this._minCellIndex++;
                             this._maxCellIndex++;
-                            // this._setCellAttr(node, this._maxCellIndex);
-                            // this._initCell(node);
                             node.tag = this._maxCellIndex;
                             if (nodeBox.xMax + (this._maxCellIndex - this._minCellIndex + 1) * node.width > viewBox.xMin) {
-                                // node.zIndex = this._maxCellIndex;
                                 this._setCellAttr(node, this._maxCellIndex);
                                 this._initCell(node);
                             }
@@ -898,11 +901,8 @@ var tableView = cc.Class({
                             node.x = this.content.getChildByTag(this._minCellIndex).x - node.width;
                             this._minCellIndex--;
                             this._maxCellIndex--;
-                            // this._setCellAttr(node, this._minCellIndex);
-                            // this._initCell(node);
                             node.tag = this._minCellIndex;
                             if (nodeBox.xMin - (this._maxCellIndex - this._minCellIndex + 1) * node.width < viewBox.xMax) {
-                                // node.zIndex = this._minCellIndex;
                                 this._setCellAttr(node, this._minCellIndex);
                                 this._initCell(node);
                             }
@@ -924,11 +924,8 @@ var tableView = cc.Class({
                             node.y = this.content.getChildByTag(this._maxCellIndex).y - node.height;
                             this._minCellIndex++;
                             this._maxCellIndex++;
-                            // this._setCellAttr(node, this._maxCellIndex);
-                            // this._initCell(node);
                             node.tag = this._maxCellIndex;
                             if (nodeBox.yMin - (this._maxCellIndex - this._minCellIndex + 1) * node.height < viewBox.yMax) {
-                                // node.zIndex = this._maxCellIndex;
                                 this._setCellAttr(node, this._maxCellIndex);
                                 this._initCell(node);
                             }
@@ -948,11 +945,8 @@ var tableView = cc.Class({
                             node.y = this.content.getChildByTag(this._minCellIndex).y + node.height;
                             this._minCellIndex--;
                             this._maxCellIndex--;
-                            // this._setCellAttr(node, this._minCellIndex);
-                            // this._initCell(node);
                             node.tag = this._minCellIndex;
                             if (nodeBox.yMax + (this._maxCellIndex - this._minCellIndex + 1) * node.width > viewBox.yMin) {
-                                // node.zIndex = this._minCellIndex;
                                 this._setCellAttr(node, this._minCellIndex);
                                 this._initCell(node);
                             }
