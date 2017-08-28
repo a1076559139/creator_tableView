@@ -1,5 +1,5 @@
 'use strict';
-
+// <cc-array-prop :target.sync="target.cells"></cc-array-prop>
 Vue.component('tableView-inspector', {
   template: `
     <ui-prop v-prop="target.cell"></ui-prop>

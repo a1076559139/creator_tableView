@@ -409,16 +409,12 @@
     "_view": null,
     "_page": 0,
     "_pageTotal": 0,
-    "_touchLayer": null,
-    "_loadSuccess": false,
-    "_initSuccess": false,
-    "_scheduleInit": false,
+    "cell": {
+      "__uuid__": "be687b62-0d4a-4761-b460-4a067d698da1"
+    },
     "isFill": false,
     "Direction": 0,
     "pageChangeEvents": [],
-    "_N$cell": {
-      "__uuid__": "be687b62-0d4a-4761-b460-4a067d698da1"
-    },
     "_N$ScrollModel": 1,
     "_N$ViewType": 0
   },
