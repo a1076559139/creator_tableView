@@ -164,35 +164,6 @@ var tableView = cc.Class({
             }
         }
     },
-    _addControlEvent: function () {
-        this.node.on('touchstart', function (event) {
-            this._startOffest = this.getScrollOffset();
-            this._touchstart();
-        }, this);
-
-        this.node.on('touchmove', function (event) {
-            if (!this._startOffest) {
-                this.node.emit('touchstart');
-            } else {
-                this._touchmove(event);
-            }
-        }, this);
-
-        this.node.on('touch-up', function () {
-            var offset = this.getScrollOffset();
-            var p = cc.pSub(offset, this._startOffest);
-            var detail = Math.abs(p.y);
-            if (this.ScrollModel === ScrollModel.Horizontal) {
-                detail = Math.abs(p.x);
-            }
-            this._startOffest = null;
-            this._touchend(detail);
-        }, this);
-
-        this.node.on('touchcancel', function () {
-            this.node.emit('touch-up');
-        }, this);
-    },
     //初始化cell
     _initCell: function (cell, reload) {
         if ((this.ScrollModel === ScrollModel.Horizontal && this.Direction === Direction.TOP_TO_BOTTOM__LEFT_TO_RIGHT) || (this.ScrollModel === ScrollModel.Vertical && this.Direction === Direction.LEFT_TO_RIGHT__TOP_TO_BOTTOM)) {
@@ -255,9 +226,12 @@ var tableView = cc.Class({
         this._initCell(cell);
     },
     _setCellAttr: function (cell, index) {
+        // if (cell.tag > -1 && index > cell.tag) {
+        //     cc.log(1);
+        //     cell.setSiblingIndex(index > cell.tag ? this._cellCount : 0);
+        // }
         cell.tag = index;
         cell.zIndex = index;
-        // cell.setSiblingIndex(index);
     },
     _addCellsToView: function () {
         for (var index = 0; index <= this._maxCellIndex; ++index) {
@@ -445,6 +419,7 @@ var tableView = cc.Class({
 
         this._changePageNum(1 - this._page);
 
+        this._startOffest = this.getScrollOffset();
         this._lastOffset = this.getScrollOffset();
         this._minCellIndex = 0;
         this._maxCellIndex = this._cellCount - 1;
@@ -474,8 +449,6 @@ var tableView = cc.Class({
             this.horizontalScrollBar && this.horizontalScrollBar.node.on('size-changed', function () {
                 this._updateScrollBar(this._getHowMuchOutOfBoundary());
             }, this);
-            // 添加tableView控制事件
-            this._addControlEvent();
             //存在Widget则在下一帧进行初始化
             if (this.node.getComponent(cc.Widget) || this._view.getComponent(cc.Widget) || this.content.getComponent(cc.Widget)) {
                 this.scheduleOnce(this._initTableView);
@@ -491,6 +464,12 @@ var tableView = cc.Class({
         }
     },
     //*************************************************重写ScrollView方法*************************************************//
+    // touch event handler
+    _onTouchBegan: function (event, captureListeners) {
+        this._super(event, captureListeners);
+        this._touchstart(event);
+    },
+
     _onTouchMoved: function (event, captureListeners) {
         if (!this.enabledInHierarchy) return;
         if (this._hasNestedViewGroup(event, captureListeners)) return;
@@ -519,6 +498,17 @@ var tableView = cc.Class({
             }
         }
         this._stopPropagationIfTargetIsMe(event);
+
+        this._touchmove(event);
+    },
+
+    _onTouchEnded: function (event, captureListeners) {
+        this._super(event, captureListeners);
+        this._touchend(event);
+    },
+    _onTouchCancelled: function (event, captureListeners) {
+        this._super(event, captureListeners);
+        this._touchend(event);
     },
     stopAutoScroll: function () {
         if (this._scheduleInit) {
@@ -753,7 +743,7 @@ var tableView = cc.Class({
             }
         }
     },
-    _touchend: function (detail) {
+    _touchend: function (event) {
         if (this.ScrollModel === ScrollModel.Horizontal) {
             this.horizontal = true;
         } else {
@@ -761,7 +751,7 @@ var tableView = cc.Class({
         }
 
         if (this.ViewType === ViewType.Flip && this._pageTotal > 1) {
-            this._pageMove(detail);
+            this._pageMove(event);
         }
 
         // this._ckickCell(event);
@@ -801,7 +791,7 @@ var tableView = cc.Class({
     //     }
     // },
     //移动距离小于25%则不翻页
-    _pageMove: function (detail) {
+    _pageMove: function (event) {
         var x = this._view.width;
         var y = this._view.height;
 
@@ -814,7 +804,7 @@ var tableView = cc.Class({
                     return;
                 }
                 y = 0;
-                if (detail > this._view.width / 4) {
+                if (Math.abs(event.getLocation().x - event.getStartLocation().x) > this._view.width / 4) {
                     if (this._scrollDirection === ScrollDirection.Left) {
                         if (this._page < this._pageTotal) {
                             this._changePageNum(1);
@@ -834,7 +824,7 @@ var tableView = cc.Class({
                     return;
                 }
                 x = 0;
-                if (detail > this._view.height / 4) {
+                if (Math.abs(event.getLocation().y - event.getStartLocation().y) > this._view.height / 4) {
                     if (this._scrollDirection === ScrollDirection.Up) {
                         if (this._page < this._pageTotal) {
                             this._changePageNum(1);
