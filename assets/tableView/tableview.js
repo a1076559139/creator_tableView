@@ -402,7 +402,6 @@ var tableView = cc.Class({
 
         this._changePageNum(1 - this._page);
 
-        this._startOffest = this.getScrollOffset();
         this._lastOffset = this.getScrollOffset();
         this._minCellIndex = 0;
         this._maxCellIndex = this._cellCount - 1;
