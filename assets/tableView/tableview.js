@@ -3,23 +3,6 @@ var ScrollDirection = cc.Enum({ None: 0, Up: 1, Down: 2, Left: 3, Rigth: 4 });
 var Direction = cc.Enum({ LEFT_TO_RIGHT__TOP_TO_BOTTOM: 0, TOP_TO_BOTTOM__LEFT_TO_RIGHT: 1 });
 var ViewType = cc.Enum({ Scroll: 0, Flip: 1 });
 
-var _searchMaskParent = function (node) {
-    var Mask = cc.Mask;
-    if (Mask) {
-        var index = 0;
-        for (var curr = node; curr && cc.Node.isNode(curr); curr = curr._parent, ++index) {
-            if (curr.getComponent(Mask)) {
-                return {
-                    index: index,
-                    node: curr
-                };
-            }
-        }
-    }
-
-    return null;
-};
-
 function quickSort(arr, cb) {
     //如果数组<=1,则直接返回
     if (arr.length <= 1) { return arr; }
