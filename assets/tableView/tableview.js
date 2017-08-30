@@ -589,7 +589,7 @@ var tableView = cc.Class({
         y = (this._page - 1) * y;
         this.scrollToOffset({ x: x, y: y }, time);
     },
-    getCells: function (callback) {
+    getCells: function () {
         var cells = [];
         var nodes = quickSort(this.content.children, function (a, b) {
             return a.tag < b.tag;
@@ -605,7 +605,7 @@ var tableView = cc.Class({
     getData: function () {
         return this._data;
     },
-    getGroupsRange: function (callback) {
+    getGroupsRange: function () {
         var arr = [];
         for (var i = this._minCellIndex; i <= this._maxCellIndex; i++) {
             arr.push(i);
@@ -846,7 +846,6 @@ var tableView = cc.Class({
             }
         } else {
             if (offset.y < 0) {
-
                 this._scrollDirection = ScrollDirection.Down;
             } else if (offset.y > 0) {
                 this._scrollDirection = ScrollDirection.Up;
