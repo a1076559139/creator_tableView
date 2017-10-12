@@ -376,7 +376,7 @@
     "_atlas": null
   },
   {
-    "__type__": "d7b0d7G9NFOHqFDEfigaFIC",
+    "__type__": "9aba29YKexFXolpweZzJPKj",
     "_name": "",
     "_objFlags": 0,
     "node": {
@@ -388,14 +388,13 @@
     },
     "horizontal": false,
     "vertical": true,
-    "inertia": false,
+    "inertia": true,
     "brake": 0.5,
     "elastic": true,
     "bounceDuration": 1,
     "scrollEvents": [],
     "cancelInnerEvents": true,
     "_N$horizontalScrollBar": null,
-    "_N$verticalScrollBar": null,
     "_data": null,
     "_minCellIndex": 0,
     "_maxCellIndex": 0,
@@ -420,7 +419,7 @@
       "__uuid__": "be687b62-0d4a-4761-b460-4a067d698da1"
     },
     "_N$ScrollModel": 1,
-    "_N$ViewType": 1
+    "_N$ViewType": 0
   },
   {
     "__type__": "cc.PrefabInfo",
