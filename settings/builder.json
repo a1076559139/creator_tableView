@@ -23,5 +23,6 @@
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,
   "mergeStartScene": false,
-  "optimizeHotUpdate": false
+  "optimizeHotUpdate": false,
+  "md5Cache": false
 }
