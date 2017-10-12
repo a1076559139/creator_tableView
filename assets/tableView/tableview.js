@@ -209,12 +209,8 @@ var tableView = cc.Class({
         this._initCell(cell);
     },
     _setCellAttr: function (cell, index) {
-        // if (cell.tag > -1 && index > cell.tag) {
-        //     cc.log(1);
-        //     cell.setSiblingIndex(index > cell.tag ? this._cellCount : 0);
-        // }
+        cell.setSiblingIndex(index >= cell.tag ? this._cellCount : 0);
         cell.tag = index;
-        cell.zIndex = index;
     },
     _addCellsToView: function () {
         for (var index = 0; index <= this._maxCellIndex; ++index) {
@@ -846,7 +842,6 @@ var tableView = cc.Class({
                             node.x = this.content.getChildByTag(this._maxCellIndex).x + node.width;
                             this._minCellIndex++;
                             this._maxCellIndex++;
-                            node.tag = this._maxCellIndex;
                             if (nodeBox.xMax + (this._maxCellIndex - this._minCellIndex + 1) * node.width > viewBox.xMin) {
                                 this._setCellAttr(node, this._maxCellIndex);
                                 this._initCell(node);
@@ -868,7 +863,6 @@ var tableView = cc.Class({
                             node.x = this.content.getChildByTag(this._minCellIndex).x - node.width;
                             this._minCellIndex--;
                             this._maxCellIndex--;
-                            node.tag = this._minCellIndex;
                             if (nodeBox.xMin - (this._maxCellIndex - this._minCellIndex + 1) * node.width < viewBox.xMax) {
                                 this._setCellAttr(node, this._minCellIndex);
                                 this._initCell(node);
@@ -891,7 +885,6 @@ var tableView = cc.Class({
                             node.y = this.content.getChildByTag(this._maxCellIndex).y - node.height;
                             this._minCellIndex++;
                             this._maxCellIndex++;
-                            node.tag = this._maxCellIndex;
                             if (nodeBox.yMin - (this._maxCellIndex - this._minCellIndex + 1) * node.height < viewBox.yMax) {
                                 this._setCellAttr(node, this._maxCellIndex);
                                 this._initCell(node);
@@ -912,7 +905,6 @@ var tableView = cc.Class({
                             node.y = this.content.getChildByTag(this._minCellIndex).y + node.height;
                             this._minCellIndex--;
                             this._maxCellIndex--;
-                            node.tag = this._minCellIndex;
                             if (nodeBox.yMax + (this._maxCellIndex - this._minCellIndex + 1) * node.width > viewBox.yMin) {
                                 this._setCellAttr(node, this._minCellIndex);
                                 this._initCell(node);

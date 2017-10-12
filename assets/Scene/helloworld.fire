@@ -376,7 +376,7 @@
     "_atlas": null
   },
   {
-    "__type__": "d7b0d7G9NFOHqFDEfigaFIC",
+    "__type__": "c30233bsbNFkY+de8yi5bKs",
     "_name": "",
     "_objFlags": 0,
     "node": {
@@ -395,7 +395,6 @@
     "scrollEvents": [],
     "cancelInnerEvents": true,
     "_N$horizontalScrollBar": null,
-    "_N$verticalScrollBar": null,
     "_data": null,
     "_minCellIndex": 0,
     "_maxCellIndex": 0,
