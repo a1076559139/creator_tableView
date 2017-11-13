@@ -16,7 +16,6 @@ var _searchMaskParent = function (node) {
             }
         }
     }
-
     return null;
 };
 
