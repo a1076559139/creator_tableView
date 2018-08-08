@@ -3,21 +3,9 @@ var ScrollDirection = cc.Enum({ None: 0, Up: 1, Down: 2, Left: 3, Rigth: 4 });
 var Direction = cc.Enum({ LEFT_TO_RIGHT__TOP_TO_BOTTOM: 0, TOP_TO_BOTTOM__LEFT_TO_RIGHT: 1 });
 var ViewType = cc.Enum({ Scroll: 0, Flip: 1 });
 
-var _searchMaskParent = function (node) {
-    var Mask = cc.Mask;
-    if (Mask) {
-        var index = 0;
-        for (var curr = node; curr && cc.Node.isNode(curr); curr = curr._parent, ++index) {
-            if (curr.getComponent(Mask)) {
-                return {
-                    index: index,
-                    node: curr
-                };
-            }
-        }
-    }
-    return null;
-};
+function pSub(t, e) {
+    return cc.v2(t.x - e.x, t.y - e.y)
+}
 
 function quickSort(arr, cb) {
     //如果数组<=1,则直接返回
@@ -59,15 +47,23 @@ var tableView = cc.Class({
         inspector: 'packages://tableView/inspector.js',
     },
     properties: {
+        // 缓存的数据
         _data: null,
-        _minCellIndex: 0,//cell的最小下标
-        _maxCellIndex: 0,//cell的最大下标
+        //cell的最小下标
+        _minCellIndex: 0,
+        //cell的最大下标
+        _maxCellIndex: 0,
         _paramCount: 0,
-        _count: 0,//一共有多少节点
-        _cellCount: 0,//scroll下有多少节点
-        _showCellCount: 0,//scroll一个屏幕能显示多少节点
+        //一共有多少节点
+        _count: 0,
+        //scroll下有多少节点
+        _cellCount: 0,
+        //scroll一个屏幕能显示多少节点
+        _showCellCount: 0,
+
         //GRID模式下，对cell进行分组管理
-        _groupCellCount: null,//每组有几个节点
+        //每组有几个节点
+        _groupCellCount: null,
 
         _scrollDirection: ScrollDirection.None,
 
@@ -76,12 +72,6 @@ var tableView = cc.Class({
 
         _page: 0,//当前处于那一页
         _pageTotal: 0,//总共有多少页
-
-        _touchLayer: cc.Node,
-
-        _loadSuccess: false,
-        _initSuccess: false,//是否初始化成功
-        _scheduleInit: false,
 
         cell: {
             default: null,
@@ -156,73 +146,12 @@ var tableView = cc.Class({
         }
     },
     onDestroy: function () {
-        cc.eventManager.removeListener(this._touchListener);
-        if (CC_JSB) {
-            this._touchListener.release();
-        }
         for (var key in tableView._tableView) {
             if (tableView._tableView[key] === this) {
                 tableView._tableView.splice(key);
                 return;
             }
         }
-    },
-    _addListenerToTouchLayer: function () {
-        this._touchLayer = new cc.Node();
-        var widget = this._touchLayer.addComponent(cc.Widget);
-        widget.isAlignTop = true;
-        widget.isAlignBottom = true;
-        widget.isAlignLeft = true;
-        widget.isAlignRight = true;
-        widget.top = 0;
-        widget.bottom = 0;
-        widget.left = 0;
-        widget.right = 0;
-        widget.isAlignOnce = false;
-        this._touchLayer.parent = this._view;
-
-        var self = this;
-        // 添加单点触摸事件监听器
-        this._touchListener = cc.EventListener.create({
-            event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches: false,
-            ower: this._touchLayer,
-            mask: _searchMaskParent(this._touchLayer),
-            onTouchBegan: function (touch, event) {
-                var pos = touch.getLocation();
-                var node = this.ower;
-
-                if (node._hitTest(pos, this)) {
-                    self._touchstart(touch);
-                    return true;
-                }
-                return false;
-            },
-            onTouchMoved: function (touch, event) {
-                self._touchmove(touch);
-            },
-            onTouchEnded: function (touch, event) {
-                self._touchend(touch);
-            }
-        });
-        if (CC_JSB) {
-            this._touchListener.retain();
-        }
-        cc.eventManager.addListener(this._touchListener, this._touchLayer);
-    },
-    _setStopPropagation: function () {
-        this.node.on('touchstart', function (event) {
-            event.stopPropagation();
-        });
-        this.node.on('touchmove', function (event) {
-            event.stopPropagation();
-        });
-        this.node.on('touchend', function (event) {
-            event.stopPropagation();
-        });
-        this.node.on('touchcancel', function (event) {
-            event.stopPropagation();
-        });
     },
     //初始化cell
     _initCell: function (cell, reload) {
@@ -374,8 +303,6 @@ var tableView = cc.Class({
         }
     },
     _initTableView: function () {
-        this._scheduleInit = false;
-
         if (this._cellPool) {
             this.clear();
         }
@@ -480,108 +407,102 @@ var tableView = cc.Class({
         this._maxCellIndex = this._cellCount - 1;
 
         this._addCellsToView();
-
-        this._initSuccess = true;
     },
     //count:cell的总个数  data:要向cell传递的数据
     initTableView: function (paramCount, data) {
         this._paramCount = paramCount;
         this._data = data;
 
-        if (!this._loadSuccess) {
-            if (this.ScrollModel === ScrollModel.Horizontal) {
-                this.horizontal = true;
-                this.vertical = false;
-            } else {
-                this.vertical = true;
-                this.horizontal = false;
-            }
-            this._view = this.content.parent;
-            //为scrollBar添加size改变的监听
-            this.verticalScrollBar && this.verticalScrollBar.node.on('size-changed', function () {
-                this._updateScrollBar(this._getHowMuchOutOfBoundary());
-            }, this);
-            this.horizontalScrollBar && this.horizontalScrollBar.node.on('size-changed', function () {
-                this._updateScrollBar(this._getHowMuchOutOfBoundary());
-            }, this);
-            //给触摸层添加时间
-            this._addListenerToTouchLayer();
-            //禁止tableView点击事件向父级传递
-            this._setStopPropagation();
-            //存在Widget则在下一帧进行初始化
-            if (this.node.getComponent(cc.Widget) || this._view.getComponent(cc.Widget) || this.content.getComponent(cc.Widget)) {
-                this.scheduleOnce(this._initTableView);
-                this._scheduleInit = true;
-            } else {
-                this._initTableView();
-            }
-            this._loadSuccess = true;
+        if (this.ScrollModel === ScrollModel.Horizontal) {
+            this.horizontal = true;
+            this.vertical = false;
         } else {
-            if (!this._scheduleInit) {
-                this._initTableView();
-            }
+            this.vertical = true;
+            this.horizontal = false;
         }
+        this._view = this.content.parent;
+        //为scrollBar添加size改变的监听
+        this.verticalScrollBar && this.verticalScrollBar.node.on('size-changed', function () {
+            this._updateScrollBar(this._getHowMuchOutOfBoundary());
+        }, this);
+        this.horizontalScrollBar && this.horizontalScrollBar.node.on('size-changed', function () {
+            this._updateScrollBar(this._getHowMuchOutOfBoundary());
+        }, this);
+        if (this.node.getComponent(cc.Widget)) {
+            this.node.getComponent(cc.Widget).updateAlignment();
+        }
+        this._initTableView();
     },
     //*************************************************重写ScrollView方法*************************************************//
-    stopAutoScroll: function () {
-        if (this._scheduleInit) {
-            this.scheduleOnce(function () {
-                this.stopAutoScroll();
-            });
+    // touch event handler
+    _onTouchBegan: function (event, captureListeners) {
+        this._super(event, captureListeners);
+        this._touchstart(event);
+    },
+
+    _onTouchMoved: function (event, captureListeners) {
+        if (!this.enabledInHierarchy) return;
+        if (this._hasNestedViewGroup(event, captureListeners)) return;
+
+        let touch = event.touch;
+        if (this.content) {
+            this._handleMoveLogic(touch);
+        }
+        // Do not prevent touch events in inner nodes
+        if (!this.cancelInnerEvents) {
             return;
         }
+
+        let deltaMove = cc.pSub(touch.getLocation(), touch.getStartLocation());
+        //FIXME: touch move delta should be calculated by DPI.
+        if (deltaMove.mag() > 7) {
+            if (!this._touchMoved && event.target !== this.node) {
+                // Simulate touch cancel for target node
+                let cancelEvent = new cc.Event.EventTouch(event.getTouches(), event.bubbles);
+                cancelEvent.type = cc.Node.EventType.TOUCH_CANCEL;
+                cancelEvent.touch = event.touch;
+                cancelEvent.simulate = true;
+                // event.target.dispatchEvent(cancelEvent);
+                event.target.emit(cc.Node.EventType.TOUCH_CANCEL, cancelEvent);
+                this._touchMoved = true;
+            }
+        }
+        this._stopPropagationIfTargetIsMe(event);
+
+        this._touchmove(event);
+    },
+
+    _onTouchEnded: function (event, captureListeners) {
+        this._super(event, captureListeners);
+        this._touchend(event);
+    },
+    _onTouchCancelled: function (event, captureListeners) {
+        this._super(event, captureListeners);
+        this._touchend(event);
+    },
+    stopAutoScroll: function () {
         this._scrollDirection = ScrollDirection.None;
         this._super();
     },
     scrollToBottom: function (timeInSecond, attenuated) {
-        if (this._scheduleInit) {
-            this.scheduleOnce(function () {
-                this.scrollToBottom(timeInSecond, attenuated);
-            });
-            return;
-        }
         this._scrollDirection = ScrollDirection.Up;
         this._super(timeInSecond, attenuated);
     },
     scrollToTop: function (timeInSecond, attenuated) {
-        if (this._scheduleInit) {
-            this.scheduleOnce(function () {
-                this.scrollToTop(timeInSecond, attenuated);
-            });
-            return;
-        }
         this._scrollDirection = ScrollDirection.Down;
         this._super(timeInSecond, attenuated);
     },
     scrollToLeft: function (timeInSecond, attenuated) {
-        if (this._scheduleInit) {
-            this.scheduleOnce(function () {
-                this.scrollToLeft(timeInSecond, attenuated);
-            });
-            return;
-        }
         this._scrollDirection = ScrollDirection.Rigth;
         this._super(timeInSecond, attenuated);
     },
     scrollToRight: function (timeInSecond, attenuated) {
-        if (this._scheduleInit) {
-            this.scheduleOnce(function () {
-                this.scrollToRight(timeInSecond, attenuated);
-            });
-            return;
-        }
         this._scrollDirection = ScrollDirection.Left;
         this._super(timeInSecond, attenuated);
     },
     scrollToOffset: function (offset, timeInSecond, attenuated) {
-        if (this._scheduleInit) {
-            this.scheduleOnce(function () {
-                this.scrollToOffset(offset, timeInSecond, attenuated);
-            });
-            return;
-        }
         var nowoffset = this.getScrollOffset();
-        var p = cc.pSub(offset, nowoffset);
+        var p = pSub(offset, nowoffset);
         if (this.ScrollModel === ScrollModel.Horizontal) {
             if (p.x > 0) {
                 this._scrollDirection = ScrollDirection.Left;
@@ -627,7 +548,7 @@ var tableView = cc.Class({
         this.pageChangeEvents.push(eventHandler);
     },
     removePageEvent: function (target) {
-        for (var key in this.pageChangeEvents) {
+        for (var key = 0; key < this.pageChangeEvents.length; key++) {
             var eventHandler = this.pageChangeEvents[key]
             if (eventHandler.target === target) {
                 this.pageChangeEvents.splice(key, 1);
@@ -657,62 +578,34 @@ var tableView = cc.Class({
 
         this._changePageNum(page - this._page);
 
-        if (this._initSuccess) {
-            var x = this._view.width;
-            var y = this._view.height;
-            x = (this._page - 1) * x;
-            y = (this._page - 1) * y;
-            this.scrollToOffset({ x: x, y: y }, time);
-        } else {
-            this.scheduleOnce(function () {
-                var x = this._view.width;
-                var y = this._view.height;
-                x = (this._page - 1) * x;
-                y = (this._page - 1) * y;
-                this.scrollToOffset({ x: x, y: y }, time);
-            });
-        }
+        var x = this._view.width;
+        var y = this._view.height;
+        x = (this._page - 1) * x;
+        y = (this._page - 1) * y;
+        this.scrollToOffset({ x: x, y: y }, time);
     },
     getCells: function (callback) {
-        var self = this;
-        var f = function () {
-            var cells = [];
-            var nodes = quickSort(self.content.children, function (a, b) {
-                return a.tag < b.tag;
-            });
-            for (var key in nodes) {
-                var node = nodes[key];
-                for (var k in node.children) {
-                    cells.push(node.children[k]);
-                }
+        var cells = [];
+        var nodes = quickSort(this.content.children, function (a, b) {
+            return a.tag < b.tag;
+        });
+        for (var key in nodes) {
+            var node = nodes[key];
+            for (var k in node.children) {
+                cells.push(node.children[k]);
             }
-            callback(cells);
         }
-
-        if (this._initSuccess) {
-            f();
-        } else {
-            this.scheduleOnce(f);
-        }
+        callback(cells);
     },
     getData: function () {
         return this._data;
     },
     getGroupsRange: function (callback) {
-        var self = this;
-        var f = function () {
-            var arr = [];
-            for (var i = self._minCellIndex; i <= self._maxCellIndex; i++) {
-                arr.push(i);
-            }
-            callback(arr);
+        var arr = [];
+        for (var i = this._minCellIndex; i <= this._maxCellIndex; i++) {
+            arr.push(i);
         }
-
-        if (this._initSuccess) {
-            f();
-        } else {
-            this.scheduleOnce(f);
-        }
+        callback(arr);
     },
     _changePageNum: function (num) {
         this._page += num;
@@ -723,7 +616,7 @@ var tableView = cc.Class({
             this._page = this._pageTotal;
         }
 
-        for (var key in this.pageChangeEvents) {
+        for (var key = 0; key < this.pageChangeEvents.length; key++) {
             var event = this.pageChangeEvents[key];
             event.emit([this._page, this._pageTotal]);
         }
@@ -955,20 +848,10 @@ var tableView = cc.Class({
     },
     _getScrollDirection: function () {
         var offset = this.getScrollOffset();
-        // var offsetMax = this.getMaxScrollOffset();
-        // if (this.ScrollModel === ScrollModel.Horizontal) {
-        //     if (offset.x >= 0 || offset.x <= -offsetMax.x) {
-        //         return;
-        //     }
-        // } else {
-        //     if (offset.y >= offsetMax.y || offset.y <= 0) {
-        //         return;
-        //     }
-        // }
 
         var lastOffset = this._lastOffset;
         this._lastOffset = offset;
-        offset = cc.pSub(offset, lastOffset);
+        offset = pSub(offset, lastOffset);
 
         if (this.ScrollModel === ScrollModel.Horizontal) {
             if (offset.x > 0) {
@@ -994,7 +877,7 @@ var tableView = cc.Class({
     update: function (dt) {
         this._super(dt);
 
-        if (!this._initSuccess || this._cellCount === this._showCellCount || this._pageTotal === 1) {
+        if (this._cellCount === this._showCellCount || this._pageTotal === 1) {
             return;
         }
         this._getScrollDirection();
