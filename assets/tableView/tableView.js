@@ -39,6 +39,15 @@ function quickSort(arr, cb) {
     return quickSort(left, cb).concat([pivot], quickSort(right, cb));
 }
 
+function getChildByCellIndex(parent, index) {
+    for (let i = 0, c = parent.children, n = c.length; i < n; i++) {
+        if (c[i]._cellIndex === index) {
+            return c[i];
+        }
+    }
+    return null;
+}
+
 var tableView = cc.Class({
     extends: cc.ScrollView,
     editor: CC_EDITOR && {
@@ -156,25 +165,25 @@ var tableView = cc.Class({
     //初始化cell
     _initCell: function (cell, reload) {
         if ((this.ScrollModel === ScrollModel.Horizontal && this.Direction === Direction.TOP_TO_BOTTOM__LEFT_TO_RIGHT) || (this.ScrollModel === ScrollModel.Vertical && this.Direction === Direction.LEFT_TO_RIGHT__TOP_TO_BOTTOM)) {
-            var tag = cell.tag * cell.childrenCount;
+            var tag = cell._cellIndex * cell.childrenCount;
             for (var index = 0; index < cell.childrenCount; ++index) {
                 var node = cell.children[index];
                 var viewCell = node.getComponent('viewCell');
                 if (viewCell) {
                     viewCell._cellInit_(this);
-                    viewCell.init(tag + index, this._data, reload, [cell.tag, index]);
+                    viewCell.init(tag + index, this._data, reload, [cell._cellIndex, index]);
                 }
             }
         } else {
             if (this.ViewType === ViewType.Flip) {
-                var tag = Math.floor(cell.tag / this._showCellCount);
+                var tag = Math.floor(cell._cellIndex / this._showCellCount);
                 var tagnum = tag * this._showCellCount * cell.childrenCount;
                 for (var index = 0; index < cell.childrenCount; ++index) {
                     var node = cell.children[index];
                     var viewCell = node.getComponent('viewCell');
                     if (viewCell) {
                         viewCell._cellInit_(this);
-                        viewCell.init(this._showCellCount * index + cell.tag % this._showCellCount + tagnum, this._data, reload, [index + tag * cell.childrenCount, index]);
+                        viewCell.init(this._showCellCount * index + cell._cellIndex % this._showCellCount + tagnum, this._data, reload, [index + tag * cell.childrenCount, index]);
                     }
                 }
             } else {
@@ -183,7 +192,7 @@ var tableView = cc.Class({
                     var viewCell = node.getComponent('viewCell');
                     if (viewCell) {
                         viewCell._cellInit_(this);
-                        viewCell.init(index * this._count + cell.tag, this._data, reload, [index, index]);
+                        viewCell.init(index * this._count + cell._cellIndex, this._data, reload, [index, index]);
                     }
                 }
             }
@@ -195,14 +204,14 @@ var tableView = cc.Class({
             if (index === 0) {
                 node.x = -this.content.width * this.content.anchorX + node.width * node.anchorX;
             } else {
-                node.x = this.content.getChildByTag(index - 1).x + node.width;
+                node.x = getChildByCellIndex(this.content, index - 1).x + node.width;
             }
             node.y = (node.anchorY - this.content.anchorY) * node.height;
         } else {
             if (index === 0) {
                 node.y = this.content.height * (1 - this.content.anchorY) - node.height * (1 - node.anchorY);
             } else {
-                node.y = this.content.getChildByTag(index - 1).y - node.height;
+                node.y = getChildByCellIndex(this.content, index - 1).y - node.height;
             }
             node.x = (node.anchorX - this.content.anchorX) * node.width;
         }
@@ -215,8 +224,8 @@ var tableView = cc.Class({
         this._initCell(cell);
     },
     _setCellAttr: function (cell, index) {
-        cell.setSiblingIndex(index >= cell.tag ? this._cellCount : 0);
-        cell.tag = index;
+        cell.setSiblingIndex(index >= cell._cellIndex ? this._cellCount : 0);
+        cell._cellIndex = index;
     },
     _addCellsToView: function () {
         for (var index = 0; index <= this._maxCellIndex; ++index) {
@@ -453,7 +462,7 @@ var tableView = cc.Class({
             return;
         }
 
-        let deltaMove = cc.pSub(touch.getLocation(), touch.getStartLocation());
+        let deltaMove = pSub(touch.getLocation(), touch.getStartLocation());
         //FIXME: touch move delta should be calculated by DPI.
         if (deltaMove.mag() > 7) {
             if (!this._touchMoved && event.target !== this.node) {
@@ -587,7 +596,7 @@ var tableView = cc.Class({
     getCells: function (callback) {
         var cells = [];
         var nodes = quickSort(this.content.children, function (a, b) {
-            return a.tag < b.tag;
+            return a._cellIndex < b._cellIndex;
         });
         for (var key in nodes) {
             var node = nodes[key];
@@ -763,11 +772,11 @@ var tableView = cc.Class({
                 if (this._maxCellIndex < this._count - 1) {
                     var viewBox = this._getBoundingBoxToWorld(this._view);
                     do {
-                        var node = this.content.getChildByTag(this._minCellIndex);
+                        var node = getChildByCellIndex(this.content, this._minCellIndex);
                         var nodeBox = this._getBoundingBoxToWorld(node);
 
                         if (nodeBox.xMax <= viewBox.xMin) {
-                            node.x = this.content.getChildByTag(this._maxCellIndex).x + node.width;
+                            node.x = getChildByCellIndex(this.content, this._maxCellIndex).x + node.width;
                             this._minCellIndex++;
                             this._maxCellIndex++;
                             if (nodeBox.xMax + (this._maxCellIndex - this._minCellIndex + 1) * node.width > viewBox.xMin) {
@@ -784,11 +793,11 @@ var tableView = cc.Class({
                 if (this._minCellIndex > 0) {
                     var viewBox = this._getBoundingBoxToWorld(this._view);
                     do {
-                        var node = this.content.getChildByTag(this._maxCellIndex);
+                        var node = getChildByCellIndex(this.content, this._maxCellIndex);
                         var nodeBox = this._getBoundingBoxToWorld(node);
 
                         if (nodeBox.xMin >= viewBox.xMax) {
-                            node.x = this.content.getChildByTag(this._minCellIndex).x - node.width;
+                            node.x = getChildByCellIndex(this.content, this._minCellIndex).x - node.width;
                             this._minCellIndex--;
                             this._maxCellIndex--;
                             if (nodeBox.xMin - (this._maxCellIndex - this._minCellIndex + 1) * node.width < viewBox.xMax) {
@@ -806,11 +815,11 @@ var tableView = cc.Class({
                 if (this._maxCellIndex < this._count - 1) {
                     var viewBox = this._getBoundingBoxToWorld(this._view);
                     do {
-                        var node = this.content.getChildByTag(this._minCellIndex);
+                        var node = getChildByCellIndex(this.content, this._minCellIndex);
                         var nodeBox = this._getBoundingBoxToWorld(node);
 
                         if (nodeBox.yMin >= viewBox.yMax) {
-                            node.y = this.content.getChildByTag(this._maxCellIndex).y - node.height;
+                            node.y = getChildByCellIndex(this.content, this._maxCellIndex).y - node.height;
                             this._minCellIndex++;
                             this._maxCellIndex++;
                             if (nodeBox.yMin - (this._maxCellIndex - this._minCellIndex + 1) * node.height < viewBox.yMax) {
@@ -826,11 +835,11 @@ var tableView = cc.Class({
                 if (this._minCellIndex > 0) {
                     var viewBox = this._getBoundingBoxToWorld(this._view);
                     do {
-                        var node = this.content.getChildByTag(this._maxCellIndex);
+                        var node = getChildByCellIndex(this.content, this._maxCellIndex);
                         var nodeBox = this._getBoundingBoxToWorld(node);
 
                         if (nodeBox.yMax <= viewBox.yMin) {
-                            node.y = this.content.getChildByTag(this._minCellIndex).y + node.height;
+                            node.y = getChildByCellIndex(this.content, this._minCellIndex).y + node.height;
                             this._minCellIndex--;
                             this._maxCellIndex--;
                             if (nodeBox.yMax + (this._maxCellIndex - this._minCellIndex + 1) * node.width > viewBox.yMin) {
