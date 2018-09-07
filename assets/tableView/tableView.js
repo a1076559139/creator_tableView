@@ -137,7 +137,6 @@ var tableView = cc.Class({
         _cellPoolCache: {},
     },
     onLoad: function () {
-        window.s = this;
         var self = this;
         tableView._tableView.push(this);
 
