@@ -88,6 +88,12 @@ export default class tableView extends cc.ScrollView {
     private updateCellsOn = false;
     private updateCellsOnce = false;
 
+    onDestroy() {
+        while (this.cellPool.size()) {
+            this.cellPool.get().destroy();
+        }
+    }
+
     onEnable() {
         this.node.on('scroll-began', this.onScrollBegin, this);
         this.node.on('scroll-ended', this.onScrollEnd, this);
