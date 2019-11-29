@@ -1,21 +1,14 @@
 {
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Chrome against localhost, with sourcemaps",
-            "type": "chrome",
+            "type": "node",
             "request": "launch",
-            "url": "http://localhost:8080",
-            "sourceMaps": true,
-            "webRoot": "${workspaceRoot}"
-        },
-        {
-            "name": "Attach to Chrome, with sourcemaps",
-            "type": "chrome",
-            "request": "attach",
-            "port": 9222,
-            "sourceMaps": true,
-            "webRoot": "${workspaceRoot}"
+            "name": "Launch Program",
+            "program": "${workspaceFolder}\\cmd\\index.js"
         }
     ]
 }

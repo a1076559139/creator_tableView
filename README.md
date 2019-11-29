@@ -1,120 +1,72 @@
 # tableView
 
-使用前需要将{示例项目目录}\packages\tableView文件夹拷贝到你的项目中去。
----
-web : 线上测试稳定。</br>
-native ：未测试。</br>
+web : 线上未测试。</br>
+native ：线上未测试。</br>
 
-# 缺点
+# 优缺点
+## 缺点
 ```
-1、如果需要使用大量label、外部图片，tableView并不能解决scrollView滚动卡顿的问题，仍需要自己做特殊处理(比如合并label等)
-2、不支持动态添加删除cell
+1、如果需要使用大量label、外部图片，仍需要自己做特殊处理(比如合并label等)，否则因DC过高引起的卡顿不可避免
+2、[小缺点] 现在不支持并且以后也不支持多行多列模式，用户可以使用单行单列模式模拟多行多列(在实际项目中发现，多行多列模式起到的作用非常有限，不光是没有单行单列灵活，而且还极大的增加了tableView本身的代码复杂度)
 ```
-# 优点
+## 优点
 ```
 1、显示大量cell时节省内存及cpu
 2、减少节点过多时导致的发热问题
+3、在同一帧进行多次insert、remove性能良好
 ```
 
-# cell:
-//cell的初始化方法，tableView创建cell时会调用此方法
+# API
+## ``` cell:```
+cell的静态方法
 ```
 @parma index Number cell的排序下标
+@return Number cell的宽或高
+static getSize(index) ;
+```
+cell的实例方法
+```
+// cell的初始化方法，tableView创建cell时会调用此方法
+@parma index Number cell的排序下标
 @parma data 自定义 初始化tableView时传入的data
-@parma reload bool 当前是否执行的是tableView.reload()操作
-@parma group Array 得到当前组
-init(index, data, reload, group) ;
+init(index, data) ;
+
+// 调用tableView.reload会触发
+reload(data) ;
+
+// 被卸载时触发
+uninit() ;
 ```
 
-# tableView:
-tableView的静态方法
----
-```
-require('tableView').reload();//刷新当前有效的所有tableView
-require('tableView').clear();//清空回收当前有效的所有tableView
-```
-
-tableView的实例方法
----
- //tableView的初始化方法
+## ```tableView:```
+// tableView的初始化方法
 ```
 @parma count Number cell的总个数
 @parma data 自定义 此data会作为初始化cell时的第二个参数
-initTableView (count, data)
+init (count, data)
 ```
 
- //清空回收当前tableView
+// 清空回收当前tableView
 ```
 clear()
 ```
 
-//获得初始初始化tableView时传递的数据
+// 刷新cell
 ```
-getData()
-```
-
-//获得目前正在展示的所有cell,将以数组的形式作为回掉的参数传递
-```
-@parma callback function 
-getCells(callback)
+reload(start, data) ;
 ```
 
-//获得目前正在展示的行或列范围,将以数组的形式作为回掉的参数传递
+// 插入cell
 ```
-@parma callback function 
-getGroupsRange(callback)
-```
-
-//翻页到某一页
-```
-@parma page Number 哪一页
-scrollToPage(page)
+insert(start, num, data) ;
 ```
 
-//翻页至下一页
+// 删除cell
 ```
-scrollToNextPage()
-```
-
-//翻页至上一页
-```
-scrollToLastPage()
+remove(start, num, data) ;
 ```
 
-//添加滚动回调
-```
-@parma target cc.Node    目标节点
-@parma component string  组件
-@parma handler string    方法名
-addScrollEvent(target, component, handler)
-```
-
-//删除滚动回调
-```
-removeScrollEvent(target, component, handler)
-```
-
-//清空滚动回调列表
-```
-clearScrollEvent()
-```
-
-//添加翻页回调
-```
-addPageEvent(target, component, handler)
-```
-
-//删除翻页回调
-```
-removePageEvent(target, component, handler)
-```
-
-//清空翻页回调列表
-```
-clearPageEvent()
-```
-
-//scrollview中原有方法,scrollview中的其它方法不可用
+// scrollview中原有方法
 ```
 scrollToBottom(timeInSecond, attenuated)
 scrollToTop(timeInSecond, attenuated)
@@ -123,22 +75,6 @@ scrollToRight(timeInSecond, attenuated)
 scrollToOffset(offset, timeInSecond, attenuated)
 getScrollOffset()
 getMaxScrollOffset() 
-```
-
-使用：
-```
-将tableView预制添加到场景中，根据需求调整大小
-编辑自己的预制cell，脚本必须继承自viewCell并必须重写init方法，init方法有两个参数，第一个参数是节点排序下标，第二个参数是初始化tableView时你传入的数据。可以重写clicked方法，无参数，被点击时调用。
-将预制拖动到tableView的Cell栏中，横向纵向滚动、惯性滑动等在ScrollView下调整，ViewType和Type等属性在tableView中调整
-通过外部脚本调用tableView中的initTableView方法对其进行初始化，第一个参数是有多少cell，第二个参数是会传递给cell的数据(可以为空) 
-*    ViewType为scroll时，滚动列表表现与scrollview一致，但却会复用节点，提高性能
-*    ViewType为flip时，在scroll的基础上使滚动列表表现为翻页效果
-*    Direction，规定cell的排列方向
-*    isFill，当节点不能铺满一个页时，选择isFill为true会填充节点铺满整个view
-
-比如：cell的大小规定为20x20，想5x5的显示出来，并且是横向翻页滑动，cell从左到右从上到下排列
-那么tableView中content的大小就应该是100*100，tableView所在节点的height应该是100，其它(大小、锚点、位置)任意，并且选择ViewType为flip，Direction为LEFT_TO_RIGHT__TOP_TO_BOTTOM
-在脚本中获取到tableView，并调用initTableView方法
 ```
 
 # 具体查看本示例

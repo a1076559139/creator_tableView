@@ -1,27 +1,60 @@
 {
+  "android-instant": {
+    "REMOTE_SERVER_ROOT": "",
+    "host": "",
+    "packageName": "org.cocos2d.leftRightJump",
+    "pathPattern": "",
+    "recordPath": "",
+    "scheme": "https",
+    "skipRecord": false
+  },
+  "appBundle": false,
+  "baidugame": {
+    "REMOTE_SERVER_ROOT": "",
+    "appid": "testappid",
+    "orientation": "portrait",
+    "subContext": ""
+  },
+  "encryptJs": true,
   "excludeScenes": [],
+  "fb-instant-games": {},
+  "includeSDKBox": false,
+  "inlineSpriteFrames": true,
+  "inlineSpriteFrames_native": true,
+  "md5Cache": true,
+  "mergeStartScene": true,
+  "optimizeHotUpdate": false,
   "orientation": {
     "landscapeLeft": true,
     "landscapeRight": true,
     "portrait": false,
     "upsideDown": false
   },
-  "packageName": "org.cocos2d.helloworld",
-  "startScene": "2d2f792f-a40c-49bb-a189-ed176a246e49",
-  "title": "hello_world",
+  "packageName": "org.cocos2d.leftRightJump",
+  "qqplay": {
+    "REMOTE_SERVER_ROOT": "",
+    "orientation": "portrait"
+  },
+  "startScene": "aa5fefcf-d7da-4732-ab12-c6263f71c76e",
+  "title": "lq",
   "webOrientation": "auto",
-  "includeSdk": [
-    "anysdk"
-  ],
-  "includeAnySDK": false,
-  "includeSDKBox": false,
-  "oauthLoginServer": "",
-  "appKey": "",
-  "appSecret": "",
-  "privateKey": "",
-  "renderMode": "0",
-  "inlineSpriteFrames": true,
-  "inlineSpriteFrames_native": true,
-  "mergeStartScene": false,
-  "optimizeHotUpdate": false
+  "wechatgame": {
+    "REMOTE_SERVER_ROOT": "",
+    "appid": "ttb680c03d29aa3dd9",
+    "isSubdomain": false,
+    "orientation": "portrait",
+    "subContext": ""
+  },
+  "xxteaKey": "65f32d22-3c6d-43",
+  "zipCompressJs": true,
+  "android": {
+    "packageName": "org.cocos2d.leftRightJump"
+  },
+  "ios": {
+    "packageName": "org.cocos2d.leftRightJump"
+  },
+  "mac": {
+    "packageName": "org.cocos2d.leftRightJump"
+  },
+  "win32": {}
 }
