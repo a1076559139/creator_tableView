@@ -92,6 +92,9 @@ export default class tableView extends cc.ScrollView {
         while (this.cellPool.size()) {
             this.cellPool.get().destroy();
         }
+        if (super.onDestroy) {
+            super.onDestroy();
+        }
     }
 
     onEnable() {
